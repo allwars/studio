@@ -22,9 +22,8 @@ const formatAuthError = (error: any): string => {
     if (error.code) {
         switch (error.code) {
             case 'auth/user-not-found':
-                return 'No user found with this email.';
             case 'auth/wrong-password':
-                return 'Incorrect password. Please try again.';
+                return 'Invalid credentials. Please check your email and password.';
             case 'auth/email-already-in-use':
                 return 'This email is already in use.';
             case 'auth/weak-password':
@@ -48,11 +47,13 @@ export async function handleSignUp(email: string, password: string, fullName: st
         await updateProfile(user, { displayName: fullName });
 
         // Create user profile in Firestore
-        await createUserProfile(user.uid, {
+        const profileData = await createUserProfile(user.uid, {
             email: user.email!,
             fullName: fullName,
-            createdAt: new Date(),
         });
+
+        // Store profile in localStorage for immediate use
+        localStorage.setItem('userProfile', JSON.stringify({ fullName, email, avatar: profileData.avatar }));
         
         return { user };
     } catch (error: any) {
@@ -77,12 +78,18 @@ export async function handleGoogleLogin(): Promise<AuthResult> {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
 
-        // Optionally, create a user profile in Firestore if they don't have one
-        await createUserProfile(user.uid, {
+        const profileData = await createUserProfile(user.uid, {
             email: user.email!,
             fullName: user.displayName || 'Google User',
-            createdAt: new Date(),
-        }, true); // `true` to merge and not overwrite
+            avatar: user.photoURL || undefined
+        }, true);
+
+        // Store profile in localStorage for immediate use
+        localStorage.setItem('userProfile', JSON.stringify({
+             fullName: user.displayName || 'Google User', 
+             email: user.email, 
+             avatar: user.photoURL || profileData.avatar,
+        }));
 
         return { user };
     } catch (error: any) {
@@ -94,7 +101,10 @@ export async function handleGoogleLogin(): Promise<AuthResult> {
 export async function handleLogout(): Promise<{ error?: string }> {
     try {
         await signOut(auth);
-        return {};
+        localStorage.removeItem('userProfile');
+        localStorage.removeItem('fitnessGoal');
+        localStorage.removeItem('pantryItems');
+        localStorage.removeItem('activityLog');
     } catch (error: any) {
         return { error: formatAuthError(error) };
     }

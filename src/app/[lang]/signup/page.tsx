@@ -12,6 +12,7 @@ import { GoogleIcon } from '@/components/icons';
 import { handleGoogleLogin, handleSignUp } from '@/lib/firebase/auth';
 import { FormEvent, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import LoadingSpinner from '@/components/loading-spinner';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -94,11 +95,15 @@ export default function SignupPage() {
                 </Alert>
               )}
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
-                {isLoading ? dict.photoAnalysis.loading : dict.signup.createAccountButton}
+                {isLoading ? <LoadingSpinner text={dict.signup.createAccountButton} /> : dict.signup.createAccountButton}
               </Button>
               <Button variant="outline" className="w-full" type="button" onClick={onGoogleSignup} disabled={isLoading}>
-                <GoogleIcon className="mr-2 h-4 w-4" />
-                {dict.signup.googleSignupButton}
+                {isLoading ? <LoadingSpinner text={dict.signup.googleSignupButton} /> : (
+                  <>
+                    <GoogleIcon className="mr-2 h-4 w-4" />
+                    {dict.signup.googleSignupButton}
+                  </>
+                )}
               </Button>
             </div>
           </form>
