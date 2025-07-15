@@ -30,6 +30,7 @@
         "mealAnalysis": "Meal Analysis",
         "progressAnalysis": "Progress Analysis",
         "profile": "Profile",
+        "log": "Log",
         "logout": "Logout"
     },
     "dashboard": {
@@ -262,5 +263,11 @@
         "thigh": "Thigh (cm)",
         "updateSuccessTitle": "Profile Updated",
         "updateSuccessDescription": "Your information has been saved."
+    },
+    "log": {
+        "title": "Activity Log",
+        "description": "Your history of workouts and meals.",
+        "comingSoonTitle": "Coming Soon!",
+        "comingSoonDescription": "This section will show your complete activity history, including meals, workouts, and personal records."
     }
 }

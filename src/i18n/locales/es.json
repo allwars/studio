@@ -30,6 +30,7 @@
         "mealAnalysis": "Análisis de Comida",
         "progressAnalysis": "Análisis de Progreso",
         "profile": "Perfil",
+        "log": "Registro",
         "logout": "Cerrar sesión"
     },
     "dashboard": {
@@ -262,5 +263,11 @@
         "thigh": "Muslo (cm)",
         "updateSuccessTitle": "Perfil Actualizado",
         "updateSuccessDescription": "Tu información ha sido guardada."
+    },
+    "log": {
+        "title": "Registro de Actividad",
+        "description": "Tu historial de entrenamientos y comidas.",
+        "comingSoonTitle": "¡Próximamente!",
+        "comingSoonDescription": "Esta sección mostrará tu historial completo de actividad, incluyendo comidas, entrenamientos y récords personales."
     }
 }

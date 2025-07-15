@@ -27,6 +27,7 @@ import {
   Languages,
   ShoppingBasket,
   Timer as TimerIcon,
+  History,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -79,6 +80,7 @@ export default function DashboardLayout({
     { href: '/dashboard/diet', label: dict.sidebar.dietPlan, icon: UtensilsCrossed },
     { href: '/dashboard/pantry', label: dict.sidebar.pantry, icon: ShoppingBasket },
     { href: '/dashboard/workout-timer', label: dict.sidebar.workoutTimer, icon: TimerIcon },
+    { href: '/dashboard/log', label: dict.sidebar.log, icon: History },
     { href: '/dashboard/meal-analysis', label: dict.sidebar.mealAnalysis, icon: Camera },
     { href: '/dashboard/progress-analysis', label: dict.sidebar.progressAnalysis, icon: Sparkles },
     { href: '/dashboard/profile', label: dict.sidebar.profile, icon: User },
