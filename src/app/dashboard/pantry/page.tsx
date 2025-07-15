@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -136,26 +137,35 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
 }
 
 
-function NutritionalInfo({ item, language, infoCache, fetchInfo }: { item: PantryItem; language: string; infoCache: NutritionalInfoCache; fetchInfo: (item: PantryItem) => void }) {
-  const [isOpen, setIsOpen] = useState(false);
+function NutritionalInfo({ item, language, infoCache, setInfoCache }: { item: PantryItem; language: string; infoCache: NutritionalInfoCache; setInfoCache: React.Dispatch<React.SetStateAction<NutritionalInfoCache>> }) {
   const dict = useDictionary();
-  const info = infoCache[item.name.toLowerCase()];
+  const cacheKey = item.name.toLowerCase();
+  const info = infoCache[cacheKey];
   const isLoading = info === 'loading';
   const isError = info === 'error';
 
-  useEffect(() => {
-    // This effect ensures that if the accordion is open, we fetch data.
-    const cacheKey = item.name.toLowerCase();
-    if (isOpen && infoCache[cacheKey] === undefined) {
-      fetchInfo(item);
-    }
-  }, [item, isOpen, infoCache, fetchInfo]);
+  const fetchInfo = useCallback(async () => {
+    if (!dict || info) return; // Don't fetch if already cached, loading, or errored
+    
+    setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
+    
+    const result = await handleGetNutritionalInfo(item.name, dict.lang);
 
-  if (!dict) return null;
+    if (result.error) {
+        setInfoCache(prev => ({ ...prev, [cacheKey]: 'error' }));
+    } else if(result.data) {
+        setInfoCache(prev => ({ ...prev, [cacheKey]: result.data! }));
+    }
+  }, [dict, item.name, cacheKey, info, setInfoCache]);
+
 
   const handleTriggerClick = () => {
-    setIsOpen(prev => !prev);
+    if(!info){
+        fetchInfo();
+    }
   }
+
+  if (!dict) return null;
 
   return (
     <AccordionItem value={item.id} className="border-none">
@@ -221,25 +231,6 @@ export default function PantryPage() {
   const [currentItem, setCurrentItem] = useState<PantryItem | null>(null);
   const [infoCache, setInfoCache] = useState<NutritionalInfoCache>({});
   
-  const fetchInfoForItem = useCallback((item: PantryItem) => {
-    // This function is now stable and doesn't depend on changing state like infoCache
-    const fetcher = async () => {
-        if (!dict) return;
-        const cacheKey = item.name.toLowerCase();
-
-        setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
-        
-        const result = await handleGetNutritionalInfo(item.name, dict.lang);
-
-        if (result.error) {
-            setInfoCache(prev => ({ ...prev, [cacheKey]: 'error' }));
-        } else if(result.data) {
-            setInfoCache(prev => ({ ...prev, [cacheKey]: result.data! }));
-        }
-    };
-    fetcher();
-  }, [dict]);
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedItems = localStorage.getItem('pantryItems');
@@ -265,18 +256,6 @@ export default function PantryPage() {
       }
     }
   }, []);
-
-  useEffect(() => {
-    if (pantryItems.length > 0 && dict) {
-        pantryItems.forEach(item => {
-            const cacheKey = item.name.toLowerCase();
-            if (!infoCache[cacheKey]) { // Only fetch if not already in cache or loading/error
-                fetchInfoForItem(item);
-            }
-        });
-    }
-  }, [pantryItems, dict, fetchInfoForItem, infoCache]);
-
 
   const saveItems = (items: PantryItem[]) => {
     setPantryItems(items);
@@ -337,7 +316,6 @@ export default function PantryPage() {
             delete newCache[oldItemName];
             return newCache;
         });
-        fetchInfoForItem(newItem);
     }
 
     setIsEditDialogOpen(false);
@@ -424,7 +402,7 @@ export default function PantryPage() {
                         </div>
                     </div>
                     <Accordion type="multiple">
-                        <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} fetchInfo={fetchInfoForItem} />
+                        <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} setInfoCache={setInfoCache} />
                     </Accordion>
                 </div>
               ))}
@@ -489,5 +467,4 @@ export default function PantryPage() {
     </div>
   );
 }
-
     
