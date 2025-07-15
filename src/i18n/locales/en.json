@@ -102,7 +102,7 @@
     "pantry": {
         "title": "Your Pantry",
         "description": "Manage the ingredients you have at home. Your diet plan will be based on this list.",
-        "addItemTitle": "Add New Ingredient",
+        "addItemTitle": "Add Ingredients",
         "itemLabel": "Ingredient Name",
         "itemPlaceholder": "e.g., Chicken breast, brown rice, broccoli",
         "addButtonLabel": "Add item",
@@ -113,5 +113,27 @@
         "saveButton": "Save Changes",
         "toastTitle": "Pantry Updated!",
         "toastDescription": "Your diet plan will now use your updated ingredient list."
+    },
+    "addToPantry": {
+        "title": "Add to Pantry",
+        "description": "Add ingredients by uploading a receipt photo or pasting text.",
+        "photoTab": "Photo",
+        "textTab": "Text",
+        "photoTitle": "Upload Receipt Photo",
+        "photoDescription": "Take a picture of your shopping receipt.",
+        "textTitle": "Paste Receipt Text",
+        "textDescription": "Copy and paste the list of items from a digital receipt or notes.",
+        "uploadLabel": "Upload a photo",
+        "pasteLabel": "Paste items here",
+        "pastePlaceholder": "1x Bananas\n2x Chicken Breast 500g\n1x Olive Oil",
+        "analyzeButton": "Analyze",
+        "analyzingButton": "Analyzing...",
+        "noInputError": "Please provide an image or text to analyze.",
+        "extractedTitle": "Extracted Items",
+        "extractedDescription": "Review the items found by the AI. Add them to your pantry.",
+        "noItemsFound": "No items could be extracted. Please try again with a clearer image or text.",
+        "addButton": "Add Selected to Pantry",
+        "toastTitle": "Items Added!",
+        "toastDescription": "The new items have been added to your pantry."
     }
 }

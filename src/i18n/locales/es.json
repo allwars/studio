@@ -102,7 +102,7 @@
     "pantry": {
         "title": "Tu Despensa",
         "description": "Gestiona los ingredientes que tienes en casa. Tu plan de dieta se basará en esta lista.",
-        "addItemTitle": "Añadir Nuevo Ingrediente",
+        "addItemTitle": "Añadir Ingredientes",
         "itemLabel": "Nombre del Ingrediente",
         "itemPlaceholder": "Ej: Pechuga de pollo, arroz integral, brócoli",
         "addButtonLabel": "Añadir ingrediente",
@@ -113,5 +113,27 @@
         "saveButton": "Guardar Cambios",
         "toastTitle": "¡Despensa Actualizada!",
         "toastDescription": "Tu plan de dieta usará ahora tu lista de ingredientes actualizada."
+    },
+    "addToPantry": {
+        "title": "Añadir a la Despensa",
+        "description": "Añade ingredientes subiendo una foto del ticket o pegando el texto.",
+        "photoTab": "Foto",
+        "textTab": "Texto",
+        "photoTitle": "Subir Foto del Ticket",
+        "photoDescription": "Haz una foto de tu ticket de la compra.",
+        "textTitle": "Pegar Texto del Ticket",
+        "textDescription": "Copia y pega la lista de artículos de un ticket digital o de tus notas.",
+        "uploadLabel": "Subir una foto",
+        "pasteLabel": "Pega los artículos aquí",
+        "pastePlaceholder": "1x Plátanos\n2x Pechuga de pollo 500g\n1x Aceite de Oliva",
+        "analyzeButton": "Analizar",
+        "analyzingButton": "Analizando...",
+        "noInputError": "Por favor, proporciona una imagen o texto para analizar.",
+        "extractedTitle": "Artículos Extraídos",
+        "extractedDescription": "Revisa los artículos encontrados por la IA. Añádelos a tu despensa.",
+        "noItemsFound": "No se pudieron extraer artículos. Prueba con una imagen o texto más claros.",
+        "addButton": "Añadir a la Despensa",
+        "toastTitle": "¡Artículos Añadidos!",
+        "toastDescription": "Los nuevos artículos se han añadido a tu despensa."
     }
 }
