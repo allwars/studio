@@ -7,3 +7,4 @@ import '@/ai/flows/generate-workout-flow.ts';
 import '@/ai/flows/generate-diet-plan-flow.ts';
 import '@/ai/flows/analyze-receipt-flow.ts';
 import '@/ai/flows/get-nutritional-info-flow.ts';
+import '@/ai/flows/generate-pantry-advice-flow.ts';

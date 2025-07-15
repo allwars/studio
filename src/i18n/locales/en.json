@@ -136,7 +136,13 @@
         "macros": "Macros",
         "healthScore": "Health Score",
         "preservatives": "Preservatives",
-        "noPreservatives": "No preservatives"
+        "noPreservatives": "No preservatives",
+        "errorFetchingInfo": "Could not fetch nutritional information for this item.",
+        "pantrySummaryTitle": "Pantry Summary",
+        "pantrySummaryDescription": "An AI-powered overview of your pantry's health.",
+        "overallHealth": "Overall Pantry Health",
+        "aiTips": "AI-Powered Tips",
+        "startByAddingItems": "Your pantry is empty. Start by adding some ingredients to get personalized tips!"
     },
     "addToPantry": {
         "title": "Add to Pantry",

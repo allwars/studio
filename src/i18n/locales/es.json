@@ -136,7 +136,13 @@
         "macros": "Macros",
         "healthScore": "Puntuación de Salud",
         "preservatives": "Conservantes",
-        "noPreservatives": "No tiene conservantes"
+        "noPreservatives": "No tiene conservantes",
+        "errorFetchingInfo": "No se pudo obtener la información nutricional para este artículo.",
+        "pantrySummaryTitle": "Resumen de la Despensa",
+        "pantrySummaryDescription": "Un resumen de la salud de tu despensa con la tecnología de IA.",
+        "overallHealth": "Salud General de la Despensa",
+        "aiTips": "Consejos de la IA",
+        "startByAddingItems": "Tu despensa está vacía. ¡Empieza añadiendo algunos ingredientes para obtener consejos personalizados!"
     },
     "addToPantry": {
         "title": "Añadir a la Despensa",

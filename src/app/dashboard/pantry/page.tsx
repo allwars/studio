@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDictionary } from '@/hooks/use-dictionary';
-import { Trash2, PlusCircle, ShoppingBasket, Pencil, ChevronDown, Loader2, AlertCircle, ThumbsUp } from 'lucide-react';
+import { Trash2, PlusCircle, ShoppingBasket, Pencil, ChevronDown, Loader2, AlertCircle, ThumbsUp, BrainCircuit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import {
@@ -19,12 +19,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { handleGetNutritionalInfo } from './actions';
+import { handleGetNutritionalInfo, handleGeneratePantryAdvice } from './actions';
 import type { NutritionalInfoOutput } from '@/ai/flows/get-nutritional-info-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Progress } from '@/components/ui/progress';
 
 export type PantryItem = {
   id: string;
@@ -33,42 +34,112 @@ export type PantryItem = {
   unit: 'g' | 'kg' | 'l' | 'ml' | 'units';
 };
 
-function NutritionalInfo({ item, language }: { item: PantryItem; language: string }) {
-  const [info, setInfo] = useState<NutritionalInfoOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+type NutritionalInfoCache = {
+  [key: string]: NutritionalInfoOutput | 'loading' | 'error';
+};
+
+function PantrySummary({ items, language, infoCache }: { items: PantryItem[], language: string, infoCache: NutritionalInfoCache }) {
+    const dict = useDictionary();
+    const [advice, setAdvice] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const scores = useMemo(() => items.map(item => {
+        const info = infoCache[item.name.toLowerCase()];
+        return typeof info === 'object' ? info.nutritionalScore : null;
+    }).filter(score => score !== null) as number[], [items, infoCache]);
+    
+    const averageScore = useMemo(() => {
+        if (scores.length === 0) return 0;
+        return Math.round(scores.reduce((acc, score) => acc + score, 0) / scores.length);
+    }, [scores]);
+
+    useEffect(() => {
+        if (items.length > 0 && scores.length === items.length) {
+            const fetchAdvice = async () => {
+                setIsLoading(true);
+                const itemNames = items.map(i => i.name);
+                const result = await handleGeneratePantryAdvice(itemNames, averageScore, language);
+                if (result.advice) {
+                    setAdvice(result.advice);
+                }
+                setIsLoading(false);
+            };
+            fetchAdvice();
+        } else if (items.length === 0) {
+            setAdvice(dict?.pantry.startByAddingItems || '');
+        }
+    }, [items, scores, averageScore, language, dict]);
+    
+    if (!dict) return null;
+    
+    const getScoreColor = (score: number) => {
+        if (score <= 30) return 'bg-red-500';
+        if (score <= 60) return 'bg-orange-500';
+        return 'bg-green-500';
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <BrainCircuit /> {dict.pantry.pantrySummaryTitle}
+                </CardTitle>
+                <CardDescription>{dict.pantry.pantrySummaryDescription}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div>
+                    <Label>{dict.pantry.overallHealth}</Label>
+                    <div className="flex items-center gap-4 mt-1">
+                        <Progress value={averageScore} className="w-full" />
+                        <span className={cn("text-lg font-bold text-white px-3 py-1 rounded-md", getScoreColor(averageScore))}>
+                            {averageScore}/100
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <Label>{dict.pantry.aiTips}</Label>
+                    {isLoading ? (
+                        <Skeleton className="h-10 w-full mt-1" />
+                    ) : (
+                        <p className="text-sm text-muted-foreground mt-1 bg-secondary p-3 rounded-md">{advice}</p>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+function NutritionalInfo({ item, language, infoCache, setInfoCache }: { item: PantryItem; language: string; infoCache: NutritionalInfoCache; setInfoCache: React.Dispatch<React.SetStateAction<NutritionalInfoCache>> }) {
   const [isOpen, setIsOpen] = useState(false);
   const dict = useDictionary();
+  const info = infoCache[item.name.toLowerCase()];
+  const isLoading = info === 'loading';
+  const isError = info === 'error';
 
-  const fetchInfo = async () => {
-    setIsLoading(true);
-    setError(null);
+  const fetchInfo = useCallback(async () => {
+    const cacheKey = item.name.toLowerCase();
+    if (infoCache[cacheKey]) return;
+
+    setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
     const result = await handleGetNutritionalInfo(item.name, language);
+
     if (result.error) {
-      setError(result.error);
-    } else {
-      setInfo(result.data);
+      setInfoCache(prev => ({ ...prev, [cacheKey]: 'error' }));
+    } else if(result.data) {
+      setInfoCache(prev => ({ ...prev, [cacheKey]: result.data! }));
     }
-    setIsLoading(false);
-  };
+  }, [item.name, language, infoCache, setInfoCache]);
   
   useEffect(() => {
-    // If the accordion is open and the item name changes, refetch the data.
     if (isOpen) {
       fetchInfo();
     }
-  }, [item.name]);
+  }, [isOpen, fetchInfo]);
 
   if (!dict) return null;
 
-
   const handleTriggerClick = () => {
-    const nextIsOpen = !isOpen;
-    setIsOpen(nextIsOpen);
-    // Fetch info only if it's opening and info hasn't been fetched yet.
-    if (nextIsOpen && !info) {
-      fetchInfo();
-    }
+    setIsOpen(prev => !prev);
   }
 
   const getScoreColor = (score: number) => {
@@ -90,14 +161,14 @@ function NutritionalInfo({ item, language }: { item: PantryItem; language: strin
             <Skeleton className="h-4 w-1/4" />
             <Skeleton className="h-4 w-3/4" />
         </div>}
-        {error && 
+        {isError && 
             <Alert variant="destructive" className="mt-2">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>{dict.photoAnalysis.errorTitle}</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>{dict.pantry.errorFetchingInfo}</AlertDescription>
             </Alert>
         }
-        {info && (
+        {info && typeof info === 'object' && (
           <div className="space-y-4 pl-2">
             <p className="text-sm text-muted-foreground">{info.description}</p>
             
@@ -147,6 +218,7 @@ export default function PantryPage() {
   const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<PantryItem | null>(null);
+  const [infoCache, setInfoCache] = useState<NutritionalInfoCache>({});
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -154,11 +226,9 @@ export default function PantryPage() {
       if (storedItems) {
         try {
             const parsedItems = JSON.parse(storedItems);
-            // Basic validation to check if it's the new format
             if (Array.isArray(parsedItems) && parsedItems.every(item => typeof item === 'object' && 'id' in item && 'name' in item)) {
                  setPantryItems(parsedItems);
             } else if (Array.isArray(parsedItems) && parsedItems.every(item => typeof item === 'string')) {
-                // This is the old format, let's migrate it.
                 const migratedItems: PantryItem[] = parsedItems.map((name: string) => ({
                     id: crypto.randomUUID(),
                     name,
@@ -241,6 +311,8 @@ export default function PantryPage() {
           </Link>
         </Button>
       </div>
+      
+      {pantryItems.length > 0 && <PantrySummary items={pantryItems} language={dict.lang} infoCache={infoCache} />}
 
       <Card>
         <CardHeader>
@@ -276,7 +348,7 @@ export default function PantryPage() {
                         </div>
                         <p className="text-sm text-muted-foreground">{item.quantity} {dict.pantry.units_options[item.unit]}</p>
                         <Accordion type="multiple">
-                           <NutritionalInfo item={item} language={dict.lang} />
+                           <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} setInfoCache={setInfoCache} />
                         </Accordion>
                     </div>
                 </div>
