@@ -267,7 +267,10 @@
     "log": {
         "title": "Registro de Actividad",
         "description": "Tu historial de entrenamientos y comidas.",
-        "comingSoonTitle": "¡Próximamente!",
-        "comingSoonDescription": "Esta sección mostrará tu historial completo de actividad, incluyendo comidas, entrenamientos y récords personales."
+        "loading": "Cargando tu registro de actividad...",
+        "noActivityTitle": "Aún no hay Actividad",
+        "noActivityDescription": "Empieza a registrar tus comidas y entrenamientos para ver tu historial aquí.",
+        "mealsTitle": "Comidas",
+        "workoutsTitle": "Entrenamientos"
     }
 }

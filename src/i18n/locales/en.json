@@ -267,7 +267,10 @@
     "log": {
         "title": "Activity Log",
         "description": "Your history of workouts and meals.",
-        "comingSoonTitle": "Coming Soon!",
-        "comingSoonDescription": "This section will show your complete activity history, including meals, workouts, and personal records."
+        "loading": "Loading your activity log...",
+        "noActivityTitle": "No Activity Yet",
+        "noActivityDescription": "Start logging your meals and workouts to see your history here.",
+        "mealsTitle": "Meals",
+        "workoutsTitle": "Workouts"
     }
 }

@@ -30,6 +30,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import type { ActivityLog, LoggedWorkoutItem } from '@/lib/types';
+
 
 export default function DashboardPage() {
   const dict = useDictionary();
@@ -98,9 +100,36 @@ export default function DashboardPage() {
   
   const handleLogWorkout = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!workout) return;
+    
     const formData = new FormData(e.target as HTMLFormElement);
     const feedback = formData.get('feedback') as string;
     const completed = formData.get('completed') === 'on';
+    
+    if (completed) {
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const storedLog = localStorage.getItem('activityLog');
+        const activityLog: ActivityLog = storedLog ? JSON.parse(storedLog) : [];
+
+        let todayLog = activityLog.find(day => day.date === today);
+
+        const newWorkoutLog: LoggedWorkoutItem = {
+            id: crypto.randomUUID(),
+            title: workout.title,
+            focus: workout.focus,
+        };
+
+        if (todayLog) {
+            todayLog.workouts.push(newWorkoutLog);
+        } else {
+            activityLog.push({
+                date: today,
+                meals: [],
+                workouts: [newWorkoutLog],
+            });
+        }
+        localStorage.setItem('activityLog', JSON.stringify(activityLog));
+    }
     
     let feedbackMessage = `Workout completed: ${completed}. User feedback: "${feedback}"`;
     if (!feedback) {
@@ -147,7 +176,7 @@ export default function DashboardPage() {
     
     return (
         <>
-            <CardHeader className="relative">
+            <CardHeader className="relative p-0">
                 <Image
                 src="https://placehold.co/1200x400.png"
                 alt="Workout banner"
@@ -156,7 +185,7 @@ export default function DashboardPage() {
                 className="rounded-t-lg object-cover w-full h-48"
                 data-ai-hint="fitness workout"
                 />
-                <div className="absolute bottom-6 left-6 bg-black/50 text-white p-4 rounded-lg">
+                <div className="absolute bottom-4 left-6 bg-black/50 text-white p-4 rounded-lg">
                 <CardTitle className="text-3xl font-headline">{workout.title}</CardTitle>
                 <CardDescription className="text-lg text-gray-200">{workout.focus}</CardDescription>
                 </div>

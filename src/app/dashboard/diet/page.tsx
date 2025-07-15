@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import DailyDietSummary from '@/components/daily-diet-summary';
+import type { ActivityLog, LoggedMealItem } from '@/lib/types';
 
 
 type LoggedMeal = {
@@ -89,6 +90,33 @@ export default function DietPage() {
 
   if (!dict) return null;
 
+  const saveToLog = (mealType: MealType, suggestion: MealSuggestionOutput) => {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const storedLog = localStorage.getItem('activityLog');
+    const activityLog: ActivityLog = storedLog ? JSON.parse(storedLog) : [];
+
+    let todayLog = activityLog.find(day => day.date === today);
+
+    const newMealLog: LoggedMealItem = {
+        id: crypto.randomUUID(),
+        mealType: mealType,
+        title: suggestion.title,
+        description: suggestion.description || '',
+    };
+    
+    if (todayLog) {
+        todayLog.meals.push(newMealLog);
+    } else {
+        activityLog.push({
+            date: today,
+            meals: [newMealLog],
+            workouts: [],
+        });
+    }
+
+    localStorage.setItem('activityLog', JSON.stringify(activityLog));
+  }
+
   const logMeal = (mealType: MealType, suggestion: MealSuggestionOutput) => {
     const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
     const newMeal: LoggedMeal = { id: crypto.randomUUID(), suggestion };
@@ -102,6 +130,8 @@ export default function DietPage() {
         error: null,
       },
     }));
+
+    saveToLog(mealType, suggestion);
 
     toast({
         title: dict.dietPlan.mealLoggedTitle,
