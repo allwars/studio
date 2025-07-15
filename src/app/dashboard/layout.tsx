@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   SidebarProvider,
   Sidebar,
@@ -37,15 +37,22 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { useEffect, useState } from 'react';
+import withAuth from '@/components/auth/withAuth';
+import { useAuth } from '@/hooks/use-auth';
+import { handleLogout } from '@/lib/firebase/auth';
+import LoadingSpinner from '@/components/loading-spinner';
 
-export default function DashboardLayout({
+function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const dict = useDictionary();
-  const [userProfile, setUserProfile] = useState({ fullName: 'John Doe', avatar: 'https://placehold.co/40x40.png' });
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  
+  const [userProfile, setUserProfile] = useState({ fullName: 'User', avatar: 'https://placehold.co/40x40.png' });
 
   useEffect(() => {
     // This effect will run on the client side, ensuring localStorage is available.
@@ -70,9 +77,17 @@ export default function DashboardLayout({
 
   }, []);
 
+  const onLogout = async () => {
+    await handleLogout();
+    router.push(`/${dict.lang}`);
+  };
 
-  if (!dict) {
-    return null; // Or a loading state
+  if (loading || !dict || !user) {
+    return (
+        <div className="flex h-screen items-center justify-center">
+            <LoadingSpinner />
+        </div>
+    );
   }
   
   const menuItems = [
@@ -95,6 +110,7 @@ export default function DashboardLayout({
   }
 
   const getInitials = (name: string) => {
+    if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   }
 
@@ -105,7 +121,7 @@ export default function DashboardLayout({
           <SidebarContent className="flex flex-col justify-between">
             <div>
               <SidebarHeader className="p-4">
-                <Link href="/dashboard" className="flex items-center gap-2">
+                <Link href={`/${dict.lang}/dashboard`} className="flex items-center gap-2">
                   <Dumbbell className="w-8 h-8 text-primary-foreground" />
                   <span className="text-xl font-bold text-primary-foreground font-headline">Move2Health</span>
                 </Link>
@@ -136,11 +152,9 @@ export default function DashboardLayout({
             <SidebarFooter>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link href={`/${currentLang}`}>
+                  <SidebarMenuButton onClick={onLogout}>
                         <LogOut />
                         <span>{dict.sidebar.logout}</span>
-                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -166,10 +180,10 @@ export default function DashboardLayout({
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                 <span className="font-semibold">{userProfile.fullName}</span>
+                 <span className="font-semibold">{user.displayName || 'User'}</span>
                  <Avatar>
-                  <AvatarImage src={userProfile.avatar} alt="User avatar" data-ai-hint="user avatar" />
-                  <AvatarFallback>{getInitials(userProfile.fullName)}</AvatarFallback>
+                  <AvatarImage src={user.photoURL || userProfile.avatar} alt="User avatar" data-ai-hint="user avatar" />
+                  <AvatarFallback>{getInitials(user.displayName || '')}</AvatarFallback>
                 </Avatar>
               </div>
             </header>
@@ -179,3 +193,5 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
+
+export default withAuth(DashboardLayout);

@@ -5,24 +5,50 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dumbbell, Mail, Lock } from 'lucide-react';
+import { Dumbbell, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { GoogleIcon } from '@/components/icons';
+import { FormEvent, useState } from 'react';
+import { handleEmailLogin, handleGoogleLogin } from '@/lib/firebase/auth';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const router = useRouter();
   const dict = useDictionary();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  if (!dict) return null; // or a loading skeleton
+  if (!dict) return null;
 
-  const handleLogin = (e: React.FormEvent) => {
+  const onLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push(`/${dict.lang}/dashboard`);
+    setError(null);
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    const result = await handleEmailLogin(email, password);
+    if (result.error) {
+      setError(result.error);
+    } else {
+      router.push(`/${dict.lang}/dashboard`);
+    }
+    setIsLoading(false);
   };
   
-  const handleGoogleLogin = () => {
-    router.push(`/${dict.lang}/dashboard`);
+  const onGoogleLogin = async () => {
+    setError(null);
+    setIsLoading(true);
+    const result = await handleGoogleLogin();
+    if (result.error) {
+        setError(result.error);
+    } else {
+        router.push(`/${dict.lang}/dashboard`);
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -34,13 +60,13 @@ export default function LoginPage() {
           <CardDescription>{dict.login.description}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={onLogin}>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">{dict.login.emailLabel}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input id="email" type="email" placeholder="m@example.com" required className="pl-10" />
+                  <Input id="email" name="email" type="email" placeholder="m@example.com" required className="pl-10" />
                 </div>
               </div>
               <div className="space-y-2">
@@ -52,13 +78,20 @@ export default function LoginPage() {
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input id="password" type="password" required className="pl-10" />
+                  <Input id="password" name="password" type="password" required className="pl-10" />
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-                {dict.login.loginButton}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>{dict.photoAnalysis.errorTitle}</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
+                {isLoading ? dict.photoAnalysis.loading : dict.login.loginButton}
               </Button>
-              <Button variant="outline" className="w-full" type="button" onClick={handleGoogleLogin}>
+              <Button variant="outline" className="w-full" type="button" onClick={onGoogleLogin} disabled={isLoading}>
                 <GoogleIcon className="mr-2 h-4 w-4" />
                 {dict.login.googleLoginButton}
               </Button>
