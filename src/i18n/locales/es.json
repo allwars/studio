@@ -110,7 +110,14 @@
             "lunch": "Almuerzo",
             "dinner": "Cena",
             "snack": "Snack"
-        }
+        },
+        "logManually": "Registrar Manualmente",
+        "manualLogTitle": "Registrar Manualmente",
+        "manualLogDescription": "¿Qué comiste? Esto quedará registrado e influirá en futuras sugerencias.",
+        "manualLogMealName": "Nombre de la Comida",
+        "manualLogPlaceholder": "Ej: Huevos revueltos con tostada",
+        "manualLogMealDescription": "Notas (opcional)",
+        "manualLogDescriptionPlaceholder": "Ej: Dos huevos, una rebanada de pan integral"
     },
     "pantry": {
         "title": "Tu Despensa",

@@ -110,7 +110,14 @@
             "lunch": "Lunch",
             "dinner": "Dinner",
             "snack": "Snack"
-        }
+        },
+        "logManually": "Log Manually",
+        "manualLogTitle": "Manually Log",
+        "manualLogDescription": "What did you eat? This will be logged and will influence future suggestions.",
+        "manualLogMealName": "Meal Name",
+        "manualLogPlaceholder": "e.g., Scrambled eggs with toast",
+        "manualLogMealDescription": "Notes (optional)",
+        "manualLogDescriptionPlaceholder": "e.g., Two eggs, one slice of whole wheat toast"
     },
     "pantry": {
         "title": "Your Pantry",

@@ -11,9 +11,13 @@ import { handleGenerateMealSuggestion } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import type { MealSuggestionOutput, MealType } from '@/ai/flows/generate-meal-suggestion-flow';
-import { AlertCircle, Utensils, Lightbulb, CheckCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Utensils, Lightbulb, CheckCircle, Loader2, PencilLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 type MealState = {
   suggestion: MealSuggestionOutput | null;
@@ -122,6 +126,77 @@ export default function DietPage() {
     });
   };
 
+  const handleManualLog = (mealType: MealType, data: { title: string; description: string }) => {
+    const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
+    const manualSuggestion: MealSuggestionOutput = {
+      title: data.title,
+      description: data.description,
+      dataAiHint: data.title.split(' ').slice(0, 2).join(' '),
+    };
+
+    setMeals(prev => ({
+      ...prev,
+      [mealKey]: {
+        suggestion: manualSuggestion,
+        isLogged: true,
+        isLoading: false,
+        error: null
+      },
+    }));
+
+    toast({
+        title: dict.dietPlan.mealLoggedTitle,
+        description: `${data.title} ${dict.dietPlan.mealLoggedDescription}`,
+    });
+  };
+
+  const ManualLogDialog = ({ mealType }: { mealType: MealType }) => {
+    const [open, setOpen] = useState(false);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      handleManualLog(mealType, { title, description });
+      setOpen(false);
+      setTitle('');
+      setDescription('');
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" className="w-full">
+            <PencilLine className="mr-2" />
+            {dict.dietPlan.logManually}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <form onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>{dict.dietPlan.manualLogTitle} {dict.dietPlan.mealType[mealType.toLowerCase() as Lowercase<MealType>]}</DialogTitle>
+              <DialogDescription>{dict.dietPlan.manualLogDescription}</DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="meal-title">{dict.dietPlan.manualLogMealName}</Label>
+                <Input id="meal-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={dict.dietPlan.manualLogPlaceholder} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="meal-description">{dict.dietPlan.manualLogMealDescription}</Label>
+                <Textarea id="meal-description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder={dict.dietPlan.manualLogDescriptionPlaceholder} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">{dict.dietPlan.logMeal}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
+
   const renderMealCard = (mealType: MealType) => {
     const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
     const mealState = meals[mealKey];
@@ -194,11 +269,12 @@ export default function DietPage() {
                     </Alert>
                 )}
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col gap-2">
                  <Button className="w-full" onClick={() => handleSuggestMeal(mealType)} disabled={pantryItems.length === 0}>
                     <Lightbulb className="mr-2" />
                     {dict.dietPlan.suggestMeal}
                 </Button>
+                <ManualLogDialog mealType={mealType} />
             </CardFooter>
         </Card>
     );
