@@ -57,7 +57,18 @@
                 "description": "Este plan proporciona una rutina equilibrada de fuerza, cardio y flexibilidad para mantener tu nivel de fitness actual y tu salud general."
             }
         },
-        "markAsCompleted": "Marcar como Completado"
+        "markAsCompleted": "Marcar como Completado",
+        "logWorkout": {
+            "button": "Registrar Entrenamiento",
+            "title": "Registra tu Entrenamiento",
+            "description": "Deja tus comentarios para adaptar tu próxima sesión.",
+            "completedLabel": "Completé todo el entrenamiento",
+            "feedbackLabel": "¿Cómo te sentiste?",
+            "feedbackPlaceholder": "Ej: 'El cardio fue muy fácil, pero las sentadillas fueron difíciles.'",
+            "saveButton": "Guardar Registro",
+            "logSaved": "¡Entrenamiento Registrado!",
+            "nextWorkoutAdjusted": "Tu próximo entrenamiento se ajustará según tus comentarios."
+        }
     },
     "mealAnalysis": {
         "title": "Análisis de Foto de Comida",
@@ -107,3 +118,5 @@
         ]
     }
 }
+
+    

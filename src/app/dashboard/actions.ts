@@ -2,9 +2,9 @@
 
 import { generateWorkout, GenerateWorkoutOutput } from '@/ai/flows/generate-workout-flow';
 
-export async function handleGenerateWorkout(goal: string, language: string): Promise<GenerateWorkoutOutput | { error: string }> {
+export async function handleGenerateWorkout(goal: string, language: string, previousWorkoutFeedback?: string): Promise<GenerateWorkoutOutput | { error: string }> {
     try {
-        const result = await generateWorkout({ goal, language });
+        const result = await generateWorkout({ goal, language, previousWorkoutFeedback });
         return result;
     } catch (e) {
         console.error(e);
@@ -12,3 +12,5 @@ export async function handleGenerateWorkout(goal: string, language: string): Pro
         return { error: `Failed to generate workout: ${errorMessage}` };
     }
 }
+
+    

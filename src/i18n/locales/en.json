@@ -57,7 +57,18 @@
                 "description": "This plan provides a balanced routine of strength, cardio, and flexibility to maintain your current fitness level and overall health."
             }
         },
-        "markAsCompleted": "Mark as Completed"
+        "markAsCompleted": "Mark as Completed",
+        "logWorkout": {
+            "button": "Log Workout",
+            "title": "Log Your Workout",
+            "description": "Provide feedback to tailor your next session.",
+            "completedLabel": "I completed the entire workout",
+            "feedbackLabel": "How did it feel?",
+            "feedbackPlaceholder": "e.g., 'The cardio was too easy, but the squats were tough.'",
+            "saveButton": "Save Log",
+            "logSaved": "Workout Logged!",
+            "nextWorkoutAdjusted": "Your next workout will be adjusted based on your feedback."
+        }
     },
     "mealAnalysis": {
         "title": "Meal Photo Analysis",
@@ -107,3 +118,5 @@
         ]
     }
 }
+
+    

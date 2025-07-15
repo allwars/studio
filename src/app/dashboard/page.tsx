@@ -22,21 +22,26 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import Timer from '@/components/timer';
-import { CheckCircle, Heart, Flame, Bike, Zap, StretchHorizontal, Pencil, Target, AlertCircle } from 'lucide-react';
+import { CheckCircle, Heart, Flame, Bike, Zap, StretchHorizontal, Pencil, Target, AlertCircle, BookCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { handleGenerateWorkout } from './actions';
 import type { GenerateWorkoutOutput } from '@/ai/flows/generate-workout-flow';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
 
 export default function DashboardPage() {
   const dict = useDictionary();
+  const { toast } = useToast();
   const [goal, setGoal] = useState<string>('');
   const [workout, setWorkout] = useState<GenerateWorkoutOutput | null>(null);
   const [isLoadingWorkout, setIsLoadingWorkout] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
+  const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
+  const [lastWorkoutFeedback, setLastWorkoutFeedback] = useState<string | undefined>(undefined);
   
   useEffect(() => {
     if (dict) {
@@ -50,7 +55,7 @@ export default function DashboardPage() {
       const fetchWorkout = async () => {
         setIsLoadingWorkout(true);
         setError(null);
-        const result = await handleGenerateWorkout(goal, dict.lang);
+        const result = await handleGenerateWorkout(goal, dict.lang, lastWorkoutFeedback);
         if ('error' in result) {
           setError(result.error);
           setWorkout(null);
@@ -58,10 +63,12 @@ export default function DashboardPage() {
           setWorkout(result);
         }
         setIsLoadingWorkout(false);
+        // Reset feedback after using it
+        setLastWorkoutFeedback(undefined);
       };
       fetchWorkout();
     }
-  }, [goal, dict]);
+  }, [goal, dict, lastWorkoutFeedback]);
   
   if (!dict) return null;
 
@@ -72,9 +79,28 @@ export default function DashboardPage() {
     if (newGoal) {
       setGoal(newGoal);
     }
-    setIsDialogOpen(false);
+    setIsGoalDialogOpen(false);
   };
   
+  const handleLogWorkout = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const feedback = formData.get('feedback') as string;
+    const completed = formData.get('completed') === 'on';
+    
+    let feedbackMessage = `Workout completed: ${completed}. User feedback: "${feedback}"`;
+    if (!feedback) {
+        feedbackMessage = `Workout completed: ${completed}. User provided no specific feedback.`;
+    }
+
+    setLastWorkoutFeedback(feedbackMessage);
+    setIsLogDialogOpen(false);
+    toast({
+        title: dict.dashboard.logWorkout.logSaved,
+        description: dict.dashboard.logWorkout.nextWorkoutAdjusted,
+    });
+  };
+
   const renderWorkoutContent = () => {
     if (isLoadingWorkout) {
       return (
@@ -186,9 +212,34 @@ export default function DashboardPage() {
                 </Accordion>
             </CardContent>
             <CardFooter className="flex justify-between">
-                <Button size="lg" className="bg-primary hover:bg-primary/90">
-                <CheckCircle className="mr-2 h-5 w-5" /> {dict.dashboard.markAsCompleted}
-                </Button>
+              <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+                <DialogTrigger asChild>
+                   <Button size="lg" className="bg-primary hover:bg-primary/90">
+                      <BookCheck className="mr-2 h-5 w-5" /> {dict.dashboard.logWorkout.button}
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <form onSubmit={handleLogWorkout}>
+                    <DialogHeader>
+                      <DialogTitle>{dict.dashboard.logWorkout.title}</DialogTitle>
+                      <DialogDescription>{dict.dashboard.logWorkout.description}</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                       <div className="flex items-center space-x-2">
+                         <Switch id="completed" name="completed" defaultChecked/>
+                         <Label htmlFor="completed">{dict.dashboard.logWorkout.completedLabel}</Label>
+                       </div>
+                       <div className="grid w-full gap-1.5">
+                         <Label htmlFor="feedback">{dict.dashboard.logWorkout.feedbackLabel}</Label>
+                         <Textarea name="feedback" id="feedback" placeholder={dict.dashboard.logWorkout.feedbackPlaceholder} />
+                       </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit">{dict.dashboard.logWorkout.saveButton}</Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
                 <Button variant="outline" size="icon" aria-label="Favorite workout">
                 <Heart className="h-6 w-6 text-muted-foreground" />
                 </Button>
@@ -210,7 +261,7 @@ export default function DashboardPage() {
                 </CardTitle>
                 <CardDescription>{dict.dashboard.yourCustomGoal}</CardDescription>
               </div>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Pencil className="mr-2 h-4 w-4" /> {dict.dashboard.editGoal}
@@ -251,3 +302,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
