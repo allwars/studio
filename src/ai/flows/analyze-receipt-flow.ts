@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const AnalyzeReceiptInputSchema = z.object({
+const AnalyzeReceiptInputSchema = z.object({
   photoDataUri: z
     .string()
     .optional()
@@ -23,7 +23,7 @@ export const AnalyzeReceiptInputSchema = z.object({
 });
 export type AnalyzeReceiptInput = z.infer<typeof AnalyzeReceiptInputSchema>;
 
-export const AnalyzeReceiptOutputSchema = z.object({
+const AnalyzeReceiptOutputSchema = z.object({
   items: z.array(z.string()).describe('A list of grocery items extracted from the receipt.'),
 });
 export type AnalyzeReceiptOutput = z.infer<typeof AnalyzeReceiptOutputSchema>;
