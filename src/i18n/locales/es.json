@@ -24,6 +24,7 @@
     },
     "sidebar": {
         "dashboard": "Panel",
+        "workouts": "Entrenamientos",
         "dietPlan": "Plan de Dieta",
         "pantry": "Despensa",
         "workoutTimer": "Temporizador",
@@ -72,6 +73,9 @@
             "logSaved": "¡Entrenamiento Registrado!",
             "nextWorkoutAdjusted": "Tu próximo entrenamiento se ajustará según tus comentarios."
         }
+    },
+    "workouts": {
+        "description": "Tu plan de entrenamiento con IA, adaptado a tu objetivo actual."
     },
     "mealAnalysis": {
         "title": "Análisis de Foto de Comida",

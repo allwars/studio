@@ -24,6 +24,7 @@
     },
     "sidebar": {
         "dashboard": "Dashboard",
+        "workouts": "Workouts",
         "dietPlan": "Diet Plan",
         "pantry": "Pantry",
         "workoutTimer": "Workout Timer",
@@ -72,6 +73,9 @@
             "logSaved": "Workout Logged!",
             "nextWorkoutAdjusted": "Your next workout will be adjusted based on your feedback."
         }
+    },
+    "workouts": {
+        "description": "Your AI-powered workout plan, tailored to your current goal."
     },
     "mealAnalysis": {
         "title": "Meal Photo Analysis",

@@ -77,6 +77,7 @@ export default function DashboardLayout({
   
   const menuItems = [
     { href: '/dashboard', label: dict.sidebar.dashboard, icon: LayoutDashboard },
+    { href: '/dashboard/workouts', label: dict.sidebar.workouts, icon: Dumbbell },
     { href: '/dashboard/diet', label: dict.sidebar.dietPlan, icon: UtensilsCrossed },
     { href: '/dashboard/pantry', label: dict.sidebar.pantry, icon: ShoppingBasket },
     { href: '/dashboard/workout-timer', label: dict.sidebar.workoutTimer, icon: TimerIcon },
