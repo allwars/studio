@@ -41,35 +41,41 @@ type NutritionalInfoCache = {
 function PantrySummary({ items, language, infoCache }: { items: PantryItem[], language: string, infoCache: NutritionalInfoCache }) {
     const dict = useDictionary();
     const [advice, setAdvice] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
     
     const scores = useMemo(() => items.map(item => {
         const info = infoCache[item.name.toLowerCase()];
         return typeof info === 'object' ? info.nutritionalScore : null;
     }).filter(score => score !== null) as number[], [items, infoCache]);
-    
+
     const averageScore = useMemo(() => {
         if (scores.length === 0) return 0;
-        return Math.round(scores.reduce((acc, score) => acc + score, 0) / scores.length);
+        const totalScore = scores.reduce((acc, score) => acc + score, 0);
+        return Math.round(totalScore / scores.length);
     }, [scores]);
 
     useEffect(() => {
-        if (items.length > 0 && scores.length > 0) {
+        const hasAllScores = scores.length === items.filter(item => {
+            const info = infoCache[item.name.toLowerCase()];
+            return info && typeof info === 'object';
+        }).length;
+
+        if (items.length > 0 && hasAllScores && scores.length > 0) {
             const fetchAdvice = async () => {
-                setIsLoading(true);
+                setIsLoadingAdvice(true);
                 const itemNames = items.map(i => i.name);
                 const result = await handleGeneratePantryAdvice(itemNames, averageScore, language);
                 if (result.advice) {
                     setAdvice(result.advice);
                 }
-                setIsLoading(false);
+                setIsLoadingAdvice(false);
             };
             fetchAdvice();
         } else if (items.length === 0) {
             setAdvice(dict?.pantry.startByAddingItems || '');
-            setIsLoading(false);
+            setIsLoadingAdvice(false);
         }
-    }, [items, scores.length, averageScore, language, dict]);
+    }, [items, scores, averageScore, language, dict, infoCache]);
     
     if (!dict) return null;
     
@@ -78,6 +84,8 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
         if (score <= 60) return 'bg-orange-500';
         return 'bg-green-500';
     }
+    
+    const allItemsLoaded = Object.keys(infoCache).length === items.length;
 
     return (
         <Card>
@@ -91,15 +99,21 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
                 <div>
                     <Label>{dict.pantry.overallHealth}</Label>
                     <div className="flex items-center gap-4 mt-1">
-                        <Progress value={averageScore} className="w-full" />
-                        <span className={cn("text-lg font-bold text-white px-3 py-1 rounded-md", getScoreColor(averageScore))}>
-                            {averageScore}/100
-                        </span>
+                        {!allItemsLoaded && items.length > 0 ? (
+                             <Skeleton className="h-6 w-full" />
+                        ) : (
+                            <>
+                            <Progress value={averageScore} className="w-full" />
+                            <span className={cn("text-lg font-bold text-white px-3 py-1 rounded-md", getScoreColor(averageScore))}>
+                                {averageScore}/100
+                            </span>
+                            </>
+                        )}
                     </div>
                 </div>
                 <div>
                     <Label>{dict.pantry.aiTips}</Label>
-                    {isLoading && items.length > 0 ? (
+                    {isLoadingAdvice || (!allItemsLoaded && items.length > 0) ? (
                         <Skeleton className="h-10 w-full mt-1" />
                     ) : (
                         <p className="text-sm text-muted-foreground mt-1 bg-secondary p-3 rounded-md">{advice}</p>
@@ -110,43 +124,21 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
     );
 }
 
-function NutritionalInfo({ item, language, infoCache, setInfoCache }: { item: PantryItem; language: string; infoCache: NutritionalInfoCache; setInfoCache: React.Dispatch<React.SetStateAction<NutritionalInfoCache>> }) {
+
+function NutritionalInfo({ item, language, infoCache, fetchInfo }: { item: PantryItem; language: string; infoCache: NutritionalInfoCache; fetchInfo: (item: PantryItem) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const dict = useDictionary();
   const info = infoCache[item.name.toLowerCase()];
   const isLoading = info === 'loading';
   const isError = info === 'error';
 
-  const fetchInfo = useCallback(async () => {
-    const cacheKey = item.name.toLowerCase();
-    if (infoCache[cacheKey] && infoCache[cacheKey] !== 'error') return;
-
-    setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
-    const result = await handleGetNutritionalInfo(item.name, language);
-
-    if (result.error) {
-      setInfoCache(prev => ({ ...prev, [cacheKey]: 'error' }));
-    } else if(result.data) {
-      setInfoCache(prev => ({ ...prev, [cacheKey]: result.data! }));
-    }
-  }, [item.name, language, infoCache, setInfoCache]);
-  
   useEffect(() => {
-    if (isOpen && !info) {
-      fetchInfo();
-    }
-  }, [isOpen, info, fetchInfo]);
-  
-  useEffect(() => {
+    // This effect ensures that if the name changes for an open item, we refetch.
     const cacheKey = item.name.toLowerCase();
-    if(infoCache[cacheKey]) {
-        delete infoCache[cacheKey]
+    if (isOpen && infoCache[cacheKey] === undefined) {
+      fetchInfo(item);
     }
-    if (isOpen) {
-      fetchInfo();
-    }
-  }, [item.name]);
-
+  }, [item, isOpen, infoCache, fetchInfo]);
 
   if (!dict) return null;
 
@@ -231,6 +223,21 @@ export default function PantryPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<PantryItem | null>(null);
   const [infoCache, setInfoCache] = useState<NutritionalInfoCache>({});
+  
+  const fetchInfoForItem = useCallback(async (item: PantryItem) => {
+    const cacheKey = item.name.toLowerCase();
+    if (infoCache[cacheKey] && infoCache[cacheKey] !== 'error') return;
+
+    setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
+    if(!dict) return;
+    const result = await handleGetNutritionalInfo(item.name, dict.lang);
+
+    if (result.error) {
+      setInfoCache(prev => ({ ...prev, [cacheKey]: 'error' }));
+    } else if(result.data) {
+      setInfoCache(prev => ({ ...prev, [cacheKey]: result.data! }));
+    }
+  }, [infoCache, dict]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -258,6 +265,15 @@ export default function PantryPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (pantryItems.length > 0 && dict) {
+        pantryItems.forEach(item => {
+            fetchInfoForItem(item);
+        });
+    }
+  }, [pantryItems, dict, fetchInfoForItem]);
+
+
   const saveItems = (items: PantryItem[]) => {
     setPantryItems(items);
     localStorage.setItem('pantryItems', JSON.stringify(items));
@@ -266,6 +282,17 @@ export default function PantryPage() {
   const handleRemoveItem = (itemToRemoveId: string) => {
     const updatedItems = pantryItems.filter((item) => item.id !== itemToRemoveId);
     saveItems(updatedItems);
+    
+    // Also remove from cache
+    const itemToRemove = pantryItems.find(item => item.id === itemToRemoveId);
+    if (itemToRemove) {
+        setInfoCache(prev => {
+            const newCache = { ...prev };
+            delete newCache[itemToRemove.name.toLowerCase()];
+            return newCache;
+        });
+    }
+
     toast({
         title: dict.pantry.itemRemoved,
     });
@@ -293,10 +320,22 @@ export default function PantryPage() {
         return;
     }
 
+    const oldItemName = currentItem.name.toLowerCase();
     const updatedItems = pantryItems.map((item) =>
       item.id === currentItem.id ? { ...item, name, quantity, unit } : item
     );
     saveItems(updatedItems);
+    
+    const newItem = updatedItems.find(item => item.id === currentItem.id);
+    if(newItem && oldItemName !== newItem.name.toLowerCase()){
+         setInfoCache(prev => {
+            const newCache = {...prev};
+            delete newCache[oldItemName];
+            return newCache;
+        });
+        fetchInfoForItem(newItem);
+    }
+
     setIsEditDialogOpen(false);
     setCurrentItem(null);
     toast({
@@ -360,7 +399,7 @@ export default function PantryPage() {
                         </div>
                         <p className="text-sm text-muted-foreground">{item.quantity} {dict.pantry.units_options[item.unit]}</p>
                         <Accordion type="multiple">
-                           <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} setInfoCache={setInfoCache} />
+                           <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} fetchInfo={fetchInfoForItem} />
                         </Accordion>
                     </div>
                 </div>
