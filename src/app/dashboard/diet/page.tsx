@@ -19,7 +19,7 @@ import DailyDietSummary from '@/components/daily-diet-summary';
 import type { ActivityLog, LoggedMealItem } from '@/lib/types';
 import LoadingSpinner from '@/components/loading-spinner';
 import { UtensilsIcon } from '@/components/icons';
-import { getPantryItems } from '../pantry/actions';
+import type { PantryItem } from '../pantry/page';
 
 
 type LoggedMeal = {
@@ -84,19 +84,14 @@ export default function DietPage() {
     return () => clearInterval(timerId);
   }, []);
 
-  const fetchPantryItems = useCallback(async () => {
-    const result = await getPantryItems();
-    if (result.items) {
-      setPantryItems(result.items.map(item => item.name));
-    } else {
-      toast({
-        variant: 'destructive',
-        title: dict.photoAnalysis.errorTitle,
-        description: result.error,
-      });
+  const fetchPantryItems = useCallback(() => {
+    const storedPantry = localStorage.getItem('pantryItems');
+    if (storedPantry) {
+      const items: PantryItem[] = JSON.parse(storedPantry);
+      setPantryItems(items.map(item => item.name));
     }
     setIsPantryLoading(false);
-  }, [toast, dict]);
+  }, []);
 
 
   useEffect(() => {

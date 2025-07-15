@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -19,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { handleGetNutritionalInfo, handleGeneratePantryAdvice, getPantryItems, removePantryItem, updatePantryItem } from './actions';
+import { handleGetNutritionalInfo, handleGeneratePantryAdvice } from './actions';
 import type { NutritionalInfoOutput } from '@/ai/flows/get-nutritional-info-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -240,42 +241,27 @@ export default function PantryPage() {
     }));
   }, []);
 
+  const loadPantryItems = useCallback(() => {
+    setIsLoading(true);
+    const storedPantry = localStorage.getItem('pantryItems');
+    const loadedItems: PantryItem[] = storedPantry ? JSON.parse(storedPantry) : [];
+    setPantryItems(loadedItems);
+    setIsLoading(false);
+    return loadedItems;
+  }, []);
+
   useEffect(() => {
-    const loadAndFetchData = async () => {
-      if (!dict) return;
-
-      const result = await getPantryItems();
-      if(result.error) {
-        toast({
-          variant: 'destructive',
-          title: dict.photoAnalysis.errorTitle,
-          description: result.error,
-        });
-        setIsLoading(false);
-        return;
-      }
-      
-      const loadedItems = result.items || [];
-      setPantryItems(loadedItems);
-      setIsLoading(false);
-      
+    if (dict) {
+      const loadedItems = loadPantryItems();
       const itemsToFetch = loadedItems.filter(item => !infoCache[item.name.toLowerCase()]);
-      await Promise.all(itemsToFetch.map(item => fetchNutritionalInfo(item, dict.lang)));
+      Promise.all(itemsToFetch.map(item => fetchNutritionalInfo(item, dict.lang)));
     }
-    
-    loadAndFetchData();
-  }, [dict, toast, fetchNutritionalInfo, infoCache]);
+  }, [dict, loadPantryItems, fetchNutritionalInfo, infoCache]);
 
-  const handleRemoveItem = async (itemToRemoveId: string) => {
-    const result = await removePantryItem(itemToRemoveId);
-    if(result.error) {
-       toast({
-          variant: 'destructive',
-          title: dict.photoAnalysis.errorTitle,
-          description: result.error,
-        });
-        return;
-    }
+  const handleRemoveItem = (itemToRemoveId: string) => {
+    const updatedItems = pantryItems.filter((item) => item.id !== itemToRemoveId);
+    localStorage.setItem('pantryItems', JSON.stringify(updatedItems));
+    setPantryItems(updatedItems);
 
     const itemToRemove = pantryItems.find(item => item.id === itemToRemoveId);
     if (itemToRemove) {
@@ -285,8 +271,6 @@ export default function PantryPage() {
           return newCache;
       });
     }
-
-    setPantryItems(prev => prev.filter((item) => item.id !== itemToRemoveId));
 
     toast({
         title: dict.pantry.itemRemoved,
@@ -298,7 +282,7 @@ export default function PantryPage() {
     setIsEditDialogOpen(true);
   };
 
-  const handleSaveEdit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSaveEdit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!currentItem) return;
 
@@ -316,22 +300,13 @@ export default function PantryPage() {
     }
     
     const updatedItem = { ...currentItem, name, quantity, unit };
-    const result = await updatePantryItem(updatedItem);
-
-    if (result.error) {
-      toast({
-            variant: 'destructive',
-            title: dict.photoAnalysis.errorTitle,
-            description: result.error,
-      });
-      return;
-    }
-
-    const oldItemName = currentItem.name.toLowerCase();
-    setPantryItems(prev => prev.map((item) =>
+    const updatedItems = pantryItems.map((item) =>
       item.id === currentItem.id ? updatedItem : item
-    ));
+    );
+    localStorage.setItem('pantryItems', JSON.stringify(updatedItems));
+    setPantryItems(updatedItems);
     
+    const oldItemName = currentItem.name.toLowerCase();
     if(oldItemName !== updatedItem.name.toLowerCase()){
          setInfoCache(prev => {
             const newCache = {...prev};

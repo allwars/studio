@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -10,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Upload, List, AlertCircle, ShoppingBasket, ClipboardPaste, X, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { handleAnalyzeReceipt, handleAddItemsToPantry } from './actions';
+import { handleAnalyzeReceipt } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
@@ -105,21 +106,23 @@ export default function AddToPantryPage() {
       setIsSaving(true);
       
       const newItems: Omit<PantryItem, 'id'>[] = extractedItems.map(({ name, quantity, unit }) => ({ name, quantity, unit }));
-      const result = await handleAddItemsToPantry(newItems);
       
-      if(result.error) {
-        toast({
-          variant: 'destructive',
-          title: dict.photoAnalysis.errorTitle,
-          description: result.error,
-        });
-      } else {
-        toast({
-          title: dict.addToPantry.toastTitle,
-          description: dict.addToPantry.toastDescription,
-        });
-        router.push(`/${dict.lang}/dashboard/pantry`);
-      }
+      // Get existing items from localStorage
+      const storedPantry = localStorage.getItem('pantryItems');
+      const existingItems: PantryItem[] = storedPantry ? JSON.parse(storedPantry) : [];
+      
+      const itemsToSave: PantryItem[] = [
+        ...existingItems,
+        ...newItems.map(item => ({ ...item, id: crypto.randomUUID() }))
+      ];
+
+      localStorage.setItem('pantryItems', JSON.stringify(itemsToSave));
+      
+      toast({
+        title: dict.addToPantry.toastTitle,
+        description: dict.addToPantry.toastDescription,
+      });
+      router.push(`/${dict.lang}/dashboard/pantry`);
       
       setIsSaving(false);
     }
