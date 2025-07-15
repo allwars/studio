@@ -85,7 +85,7 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
             setIsLoadingAdvice(false);
         };
         
-        if (allItemsHaveScores) {
+        if (allItemsHaveScores && items.length > 0) {
             fetchAdvice();
         } else if (items.length === 0 && dict) {
             setAdvice(dict.pantry.startByAddingItems);
@@ -228,32 +228,26 @@ export default function PantryPage() {
   const [infoCache, setInfoCache] = useState<NutritionalInfoCache>({});
   const [isLoading, setIsLoading] = useState(true);
   
-  const fetchAllNutritionalInfo = useCallback(async (items: PantryItem[], language: string) => {
-    setInfoCache(prev => {
-        const newCache = {...prev};
-        items.forEach(item => {
-            const cacheKey = item.name.toLowerCase();
-            if(!newCache[cacheKey]){
-                newCache[cacheKey] = 'loading';
-            }
-        });
-        return newCache;
-    });
+  const fetchNutritionalInfo = useCallback(async (item: PantryItem, language: string) => {
+    const cacheKey = item.name.toLowerCase();
+    
+    // Set item to loading state
+    setInfoCache(prev => ({...prev, [cacheKey]: 'loading'}));
 
-    for (const item of items) {
-        const cacheKey = item.name.toLowerCase();
-        if (infoCache[cacheKey] === 'loading' || !infoCache[cacheKey]) {
-            const result = await handleGetNutritionalInfo(item.name, language);
-             setInfoCache(prev => ({
-                ...prev,
-                [cacheKey]: result.error ? 'error' : result.data!
-            }));
-        }
-    }
-  }, [infoCache]);
+    const result = await handleGetNutritionalInfo(item.name, language);
+
+    // Update cache with result or error
+    setInfoCache(prev => ({
+        ...prev,
+        [cacheKey]: result.error ? 'error' : result.data!
+    }));
+  }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    const loadAndFetchData = async () => {
+      if (typeof window === 'undefined' || !dict) return;
+
+      // Load items from localStorage
       const storedItems = localStorage.getItem('pantryItems');
       let loadedItems: PantryItem[] = [];
       if (storedItems) {
@@ -276,12 +270,16 @@ export default function PantryPage() {
         }
       }
       setPantryItems(loadedItems);
-      if (dict) {
-        fetchAllNutritionalInfo(loadedItems, dict.lang).finally(() => setIsLoading(false));
-      } else {
-        setIsLoading(false);
-      }
+      setIsLoading(false); // Page is now "loaded"
+      
+      // Fetch nutritional info for items not already in cache
+      const itemsToFetch = loadedItems.filter(item => !infoCache[item.name.toLowerCase()]);
+      
+      // Fire all requests in parallel
+      await Promise.all(itemsToFetch.map(item => fetchNutritionalInfo(item, dict.lang)));
     }
+    
+    loadAndFetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dict]);
 
@@ -345,7 +343,7 @@ export default function PantryPage() {
             return newCache;
         });
         if (dict) {
-           fetchAllNutritionalInfo([newItem], dict.lang);
+           fetchNutritionalInfo(newItem, dict.lang);
         }
     }
 
@@ -403,7 +401,7 @@ export default function PantryPage() {
         </Button>
       </div>
       
-      {pantryItems.length > 0 && <PantrySummary items={pantryItems} language={dict.lang} infoCache={infoCache} />}
+      <PantrySummary items={pantryItems} language={dict.lang} infoCache={infoCache} />
 
       <Card>
         <CardHeader>
