@@ -2,12 +2,11 @@
 'use client';
 
 import PhotoAnalysis from '@/components/photo-analysis';
-import { handleAnalyzeBodyProgress } from './actions';
+import { handleAnalyzeBodyProgress, handleGetSuggestedGoal } from './actions';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Target, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { handleGetSuggestedGoal, handleSetGoal } from './actions';
 import { useState } from 'react';
 import LoadingSpinner from '@/components/loading-spinner';
 import { useRouter } from 'next/navigation';
@@ -33,7 +32,7 @@ export default function ProgressAnalysisPage() {
     if (analysisResult.analysis) {
         // If analysis is successful, get a goal suggestion
         const goalSuggestion = await handleGetSuggestedGoal(analysisResult.analysis, dict.lang);
-        if (goalSuggestion && !goalSuggestion.error) {
+        if (goalSuggestion && !('error' in goalSuggestion)) {
             setSuggestion(goalSuggestion);
         }
     }
@@ -46,21 +45,23 @@ export default function ProgressAnalysisPage() {
     if (!suggestion) return;
     setIsSavingGoal(true);
     
-    const result = await handleSetGoal(suggestion.title);
-
-    if (result.success) {
+    try {
+        // Since handleSetGoal is a server action now, we just update localStorage on the client
+        localStorage.setItem('fitnessGoal', suggestion.title);
         toast({
             title: dict.progressAnalysis.goalSetSuccessTitle,
             description: dict.progressAnalysis.goalSetSuccessDescription,
         });
         router.push(`/${dict.lang}/dashboard`);
-    } else {
-        toast({
+
+    } catch(error) {
+         toast({
             variant: "destructive",
             title: dict.photoAnalysis.errorTitle,
-            description: result.error || dict.photoAnalysis.unexpectedError,
+            description: error instanceof Error ? error.message : dict.photoAnalysis.unexpectedError,
         });
     }
+
 
     setIsSavingGoal(false);
   };
