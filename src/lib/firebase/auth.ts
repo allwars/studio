@@ -108,4 +108,5 @@ export async function handleLogout(): Promise<{ error?: string }> {
     } catch (error: any) {
         return { error: formatAuthError(error) };
     }
+    return {};
 }
