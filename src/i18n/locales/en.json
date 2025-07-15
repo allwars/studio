@@ -170,10 +170,12 @@
     "timer": {
         "title": "Workout Timer",
         "description": "Select a timer type and start your workout.",
-        "start_button": "Start Timer",
+        "start_button": "Start",
         "pause_button": "Pause",
         "reset_button": "Reset",
         "skip_button": "Skip Round",
+        "next_round_button": "Next Round",
+        "finished": "Finished!",
         "labels": {
             "time_cap_min": "Time Cap (min)",
             "rounds": "Rounds",

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, RefreshCw, Timer as TimerIcon, Settings, History, Forward } from 'lucide-react';
+import { Play, Pause, RefreshCw, Timer as TimerIcon, Settings, History, Forward, Plus, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,8 @@ const Timer = () => {
   // FOR_TIME settings
   const [forTimeLimit, setForTimeLimit] = useState(10 * 60); // 10 minutes
   const [forTimeRounds, setForTimeRounds] = useState(5);
+  const [currentRound, setCurrentRound] = useState(0);
+
 
   // AMRAP settings
   const [amrapTime, setAmrapTime] = useState(20 * 60); // 20 minutes
@@ -40,6 +42,13 @@ const Timer = () => {
   const [tabataRest, setTabataRest] = useState(10);
   const [tabataRounds, setTabataRounds] = useState(8);
 
+  const stopTimer = useCallback(() => {
+    setIsActive(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+  }, []);
+
   useEffect(() => {
     if (isActive) {
       intervalRef.current = setInterval(() => {
@@ -52,15 +61,36 @@ const Timer = () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isActive]);
+  
+  // FOR_TIME mode logic
+  useEffect(() => {
+    if (mode === 'FOR_TIME' && isActive) {
+      if (time >= forTimeLimit) {
+        stopTimer();
+      }
+      if (currentRound >= forTimeRounds) {
+        stopTimer();
+      }
+    }
+  }, [time, currentRound, forTimeLimit, forTimeRounds, isActive, mode, stopTimer]);
+
 
   const handleStartPause = () => {
-    setIsActive(!isActive);
-    if(isConfiguring) setIsConfiguring(false);
+    if (isConfiguring) {
+        // Reset state when starting a new timer
+        setTime(0);
+        setCurrentRound(0);
+        setIsConfiguring(false);
+        setIsActive(true);
+    } else {
+        setIsActive(!isActive);
+    }
   };
 
   const handleReset = () => {
     setIsActive(false);
     setTime(0);
+    setCurrentRound(0);
     setIsConfiguring(true);
   };
   
@@ -69,6 +99,12 @@ const Timer = () => {
     const seconds = (timeInSeconds % 60).toString().padStart(2, '0');
     return `${minutes}:${seconds}`;
   };
+
+  const handleNextRound = () => {
+    if (currentRound < forTimeRounds) {
+        setCurrentRound(prev => prev + 1);
+    }
+  }
   
   const renderConfiguration = () => {
     if (!dict) return null;
@@ -147,24 +183,50 @@ const Timer = () => {
 
   const renderActiveTimer = () => {
     if (!dict) return null;
+
+    const isFinished = mode === 'FOR_TIME' && currentRound >= forTimeRounds;
+
+    const renderRounds = () => {
+        if (mode !== 'FOR_TIME') return null;
+        return (
+            <div className="flex flex-col items-center justify-center gap-4 p-4 border-r">
+                <div className="text-center">
+                    <CardDescription>{dict.labels.rounds}</CardDescription>
+                    <div className="text-6xl font-bold text-secondary-foreground" suppressHydrationWarning>
+                        {currentRound} <span className="text-4xl text-muted-foreground">/ {forTimeRounds}</span>
+                    </div>
+                </div>
+                 <Button onClick={handleNextRound} disabled={!isActive || isFinished} className="w-full">
+                    <Plus className="mr-2"/> {dict.next_round_button}
+                </Button>
+            </div>
+        )
+    }
+
     return (
-         <CardContent className="flex flex-col items-center justify-center gap-4 pt-6">
-            <CardDescription className="font-semibold text-lg">{dict[mode.toLowerCase()]?.title || 'Workout Timer'}</CardDescription>
-            <div className="text-8xl font-bold font-mono text-primary tabular-nums" suppressHydrationWarning>
-            {formatTime(time)}
+         <CardContent className="grid grid-cols-1 md:grid-cols-2 p-0">
+             {renderRounds()}
+             <div className={cn("flex flex-col items-center justify-center gap-4 p-6", mode !== 'FOR_TIME' && "md:col-span-2")}>
+                <CardDescription className="font-semibold text-lg">{isFinished ? dict.finished : dict[mode.toLowerCase()]?.title || 'Workout Timer'}</CardDescription>
+                <div className={cn(
+                        "text-8xl font-bold font-mono tabular-nums",
+                        isFinished ? 'text-green-500' : 'text-primary'
+                    )}
+                    suppressHydrationWarning
+                >
+                {isFinished ? <Check size={80} /> : formatTime(time)}
+                </div>
+                 <div className="flex gap-2">
+                    <Button onClick={handleStartPause} size="lg" className="w-32 bg-accent hover:bg-accent/80 text-accent-foreground" disabled={isFinished}>
+                        {isActive ? <Pause className="mr-2" /> : <Play className="mr-2" />}
+                        {isActive ? dict.pause_button : dict.start_button}
+                    </Button>
+                    <Button onClick={handleReset} variant="outline" size="lg" className="w-32">
+                        <RefreshCw className="mr-2" />
+                        {dict.reset_button}
+                    </Button>
+                </div>
             </div>
-            {mode !== 'CHRONO' && <div className="text-2xl text-muted-foreground">Round 1 / 8</div>}
-             <div className="flex gap-2">
-                <Button onClick={handleStartPause} size="lg" className="w-32 bg-accent hover:bg-accent/80 text-accent-foreground">
-                    <Pause className="mr-2" />
-                    {dict.pause_button}
-                </Button>
-                <Button onClick={handleReset} variant="outline" size="lg" className="w-32">
-                    <RefreshCw className="mr-2" />
-                    {dict.reset_button}
-                </Button>
-            </div>
-            {mode !== 'CHRONO' && <Button variant="ghost"><Forward className="mr-2" />{dict.skip_button}</Button>}
         </CardContent>
     );
   }

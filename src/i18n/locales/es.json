@@ -170,10 +170,12 @@
     "timer": {
         "title": "Temporizador de Entrenamiento",
         "description": "Selecciona un tipo de temporizador y empieza tu entrenamiento.",
-        "start_button": "Iniciar Temporizador",
+        "start_button": "Iniciar",
         "pause_button": "Pausar",
         "reset_button": "Reiniciar",
         "skip_button": "Saltar Ronda",
+        "next_round_button": "Siguiente Ronda",
+        "finished": "¡Terminado!",
         "labels": {
             "time_cap_min": "Límite (min)",
             "rounds": "Rondas",
