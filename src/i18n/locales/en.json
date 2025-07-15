@@ -101,8 +101,9 @@
         "goToPantry": "Go to Pantry",
         "suggestMeal": "Suggest Meal",
         "logMeal": "Log Meal",
-        "getSuggestion": "Ready for your next meal?",
+        "getSuggestion": "What's on the menu?",
         "logged": "Logged",
+        "loggedMeals": "Logged Meals",
         "mealLoggedTitle": "Meal Logged!",
         "mealLoggedDescription": "has been added to your daily log.",
         "mealType": {

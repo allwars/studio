@@ -19,15 +19,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
-type MealState = {
-  suggestion: MealSuggestionOutput | null;
-  isLogged: boolean;
+type LoggedMeal = {
+  id: string;
+  suggestion: MealSuggestionOutput;
+};
+
+type MealCategoryState = {
+  loggedMeals: LoggedMeal[];
   isLoading: boolean;
   error: string | null;
 };
 
 type DailyMeals = {
-  [K in MealType as Lowercase<K>]: MealState;
+  [K in MealType as Lowercase<K>]: MealCategoryState;
 };
 
 const mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
@@ -54,10 +58,10 @@ export default function DietPage() {
   const { toast } = useToast();
 
   const [meals, setMeals] = useState<DailyMeals>({
-    breakfast: { suggestion: null, isLogged: false, isLoading: false, error: null },
-    lunch: { suggestion: null, isLogged: false, isLoading: false, error: null },
-    dinner: { suggestion: null, isLogged: false, isLoading: false, error: null },
-    snack: { suggestion: null, isLogged: false, isLoading: false, error: null },
+    breakfast: { loggedMeals: [], isLoading: false, error: null },
+    lunch: { loggedMeals: [], isLoading: false, error: null },
+    dinner: { loggedMeals: [], isLoading: false, error: null },
+    snack: { loggedMeals: [], isLoading: false, error: null },
   });
   
   const [pantryItems, setPantryItems] = useState<string[]>([]);
@@ -80,6 +84,26 @@ export default function DietPage() {
 
   if (!dict) return null;
 
+  const logMeal = (mealType: MealType, suggestion: MealSuggestionOutput) => {
+    const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
+    const newMeal: LoggedMeal = { id: crypto.randomUUID(), suggestion };
+    
+    setMeals(prev => ({
+      ...prev,
+      [mealKey]: {
+        ...prev[mealKey],
+        loggedMeals: [...prev[mealKey].loggedMeals, newMeal],
+        isLoading: false, // Ensure loading is stopped
+        error: null,
+      },
+    }));
+
+    toast({
+        title: dict.dietPlan.mealLoggedTitle,
+        description: `${suggestion.title} ${dict.dietPlan.mealLoggedDescription}`,
+    });
+  }
+
   const handleSuggestMeal = async (mealType: MealType) => {
     const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
 
@@ -89,16 +113,16 @@ export default function DietPage() {
     }));
 
     const storedGoal = localStorage.getItem('fitnessGoal') || dict.dashboard.goals.maintain_fitness.title;
-    const previousMeals = Object.values(meals)
-        .filter(m => m.isLogged && m.suggestion)
-        .map(m => m.suggestion!.title);
+    const allLoggedMeals = Object.values(meals)
+        .flatMap(m => m.loggedMeals)
+        .map(m => m.suggestion.title);
 
     const result = await handleGenerateMealSuggestion({
       mealType,
       goal: storedGoal,
       language: dict.lang,
       pantryItems,
-      previousMeals,
+      previousMeals: allLoggedMeals,
     });
     
     if ('error' in result) {
@@ -107,47 +131,18 @@ export default function DietPage() {
         [mealKey]: { ...prev[mealKey], isLoading: false, error: result.error },
       }));
     } else {
-      setMeals(prev => ({
-        ...prev,
-        [mealKey]: { ...prev[mealKey], isLoading: false, suggestion: result },
-      }));
+      // Instead of replacing, we now log the new suggestion immediately.
+      logMeal(mealType, result);
     }
   };
 
-  const handleLogMeal = (mealType: MealType) => {
-    const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
-    setMeals(prev => ({
-      ...prev,
-      [mealKey]: { ...prev[mealKey], isLogged: true },
-    }));
-    toast({
-        title: dict.dietPlan.mealLoggedTitle,
-        description: `${dict.dietPlan.mealType[mealKey]} ${dict.dietPlan.mealLoggedDescription}`,
-    });
-  };
-
   const handleManualLog = (mealType: MealType, data: { title: string; description: string }) => {
-    const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
     const manualSuggestion: MealSuggestionOutput = {
       title: data.title,
       description: data.description,
       dataAiHint: data.title.split(' ').slice(0, 2).join(' '),
     };
-
-    setMeals(prev => ({
-      ...prev,
-      [mealKey]: {
-        suggestion: manualSuggestion,
-        isLogged: true,
-        isLoading: false,
-        error: null
-      },
-    }));
-
-    toast({
-        title: dict.dietPlan.mealLoggedTitle,
-        description: `${data.title} ${dict.dietPlan.mealLoggedDescription}`,
-    });
+    logMeal(mealType, manualSuggestion);
   };
 
   const ManualLogDialog = ({ mealType }: { mealType: MealType }) => {
@@ -201,78 +196,48 @@ export default function DietPage() {
     const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
     const mealState = meals[mealKey];
     
-    // Hide future meals that are not logged and have no suggestion yet
-    if (!isMealVisible(mealType) && !mealState.isLogged && !mealState.suggestion) {
+    if (!isMealVisible(mealType) && mealState.loggedMeals.length === 0) {
         return null;
     }
-
-    if (mealState.isLoading) {
-       return (
-         <Card className="h-[380px] flex flex-col">
-            <CardHeader>
-                <Skeleton className="h-6 w-1/3" />
-                <Skeleton className="h-4 w-2/3" />
-            </CardHeader>
-            <CardContent className="flex-grow flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </CardContent>
-         </Card>
-       )
-    }
     
-    if (mealState.suggestion) {
-       return (
-        <Card className={cn("flex flex-col h-[380px]", mealState.isLogged && "border-green-500")}>
-            <CardHeader className="relative p-0">
-              {mealState.isLogged && (
-                <div className="absolute top-2 right-2 z-10 bg-green-500 text-white rounded-full p-2 flex items-center gap-1 text-xs">
-                    <CheckCircle size={14} />
-                    <span>{dict.dietPlan.logged}</span>
-                </div>
-              )}
-              <Image
-                src="https://placehold.co/600x400.png"
-                alt={mealState.suggestion.title}
-                width={600}
-                height={400}
-                className="w-full h-40 object-cover rounded-t-lg"
-                data-ai-hint={mealState.suggestion.dataAiHint}
-              />
-            </CardHeader>
-            <CardContent className="p-4 flex-grow flex flex-col">
-              <CardTitle className="mt-1 text-2xl font-headline">{mealState.suggestion.title}</CardTitle>
-              <p className="mt-2 text-muted-foreground flex-grow">{mealState.suggestion.description}</p>
-            </CardContent>
-             <CardFooter>
-               {!mealState.isLogged && (
-                 <Button className="w-full" onClick={() => handleLogMeal(mealType)}>
-                    {dict.dietPlan.logMeal}
-                </Button>
-               )}
-            </CardFooter>
-          </Card>
-       )
-    }
-
     return (
-        <Card className={cn("flex flex-col justify-between h-[380px]")}>
+        <Card className="flex flex-col h-full min-h-[380px]">
             <CardHeader>
                 <CardTitle>{dict.dietPlan.mealType[mealKey]}</CardTitle>
                 <CardDescription>{dict.dietPlan.getSuggestion}</CardDescription>
             </CardHeader>
-            <CardContent>
-                {mealState.error && (
+            <CardContent className="flex-grow space-y-4">
+              {mealState.isLoading && (
+                 <div className="flex items-center justify-center p-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                 </div>
+              )}
+               {mealState.error && (
                     <Alert variant="destructive" className="text-xs">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>{dict.photoAnalysis.errorTitle}</AlertTitle>
                         <AlertDescription>{mealState.error}</AlertDescription>
                     </Alert>
                 )}
+              {mealState.loggedMeals.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-muted-foreground">{dict.dietPlan.loggedMeals}</h4>
+                  {mealState.loggedMeals.map(meal => (
+                    <div key={meal.id} className="bg-secondary p-3 rounded-md">
+                        <p className="font-bold text-secondary-foreground flex items-center gap-2">
+                          <CheckCircle size={16} className="text-green-600" />
+                          {meal.suggestion.title}
+                        </p>
+                       {meal.suggestion.description && <p className="text-xs text-muted-foreground mt-1">{meal.suggestion.description}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
-            <CardFooter className="flex-col gap-2">
-                 <Button className="w-full" onClick={() => handleSuggestMeal(mealType)} disabled={pantryItems.length === 0}>
+            <CardFooter className="flex-col gap-2 mt-auto">
+                 <Button className="w-full" onClick={() => handleSuggestMeal(mealType)} disabled={pantryItems.length === 0 || mealState.isLoading}>
                     <Lightbulb className="mr-2" />
-                    {dict.dietPlan.suggestMeal}
+                    {mealState.isLoading ? dict.photoAnalysis.analyzingButton : dict.dietPlan.suggestMeal}
                 </Button>
                 <ManualLogDialog mealType={mealType} />
             </CardFooter>

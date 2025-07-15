@@ -101,8 +101,9 @@
         "goToPantry": "Ir a la Despensa",
         "suggestMeal": "Sugerir Comida",
         "logMeal": "Registrar Comida",
-        "getSuggestion": "¿Listo para tu próxima comida?",
+        "getSuggestion": "¿Qué hay en el menú?",
         "logged": "Registrado",
+        "loggedMeals": "Comidas Registradas",
         "mealLoggedTitle": "¡Comida Registrada!",
         "mealLoggedDescription": "se ha añadido a tu registro diario.",
         "mealType": {
