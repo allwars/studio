@@ -3,8 +3,6 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,12 +14,28 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
+// Validate that all required environment variables are present
+const areCredsValid = Object.values(firebaseConfig).every(value => value);
+
 let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
+
+// Initialize Firebase only if the credentials are valid
+if (areCredsValid) {
+    if (!getApps().length) {
+      app = initializeApp(firebaseConfig);
+    } else {
+      app = getApp();
+    }
 } else {
-  app = getApp();
+    // This will log an error on the server side if keys are missing
+    console.error("Firebase credentials are not set correctly in .env. Please check your environment variables.");
+    // In a non-functional state, we'll assign a dummy app to prevent crashes,
+    // though functionality will be broken.
+    if (!getApps().length) {
+      app = initializeApp({});
+    } else {
+      app = getApp();
+    }
 }
 
 const db = getFirestore(app);
