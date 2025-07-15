@@ -33,5 +33,22 @@
     "mealAnalysis": {
         "title": "Análisis de Foto de Comida",
         "description": "Toma una foto de tu comida y nuestra IA te proporcionará un desglose nutricional."
+    },
+    "progressAnalysis": {
+        "title": "Análisis de Progreso Corporal",
+        "description": "Sube una foto para seguir tu viaje de fitness. Nuestra IA analizará los cambios y te dará retroalimentación."
+    },
+    "photoAnalysis": {
+        "uploadLabel": "Subir Foto",
+        "analyzeButton": "Analizar Foto",
+        "analyzingButton": "Analizando...",
+        "selectPhotoError": "Por favor, selecciona una foto primero.",
+        "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+        "errorTitle": "Error",
+        "inProgressTitle": "Análisis en Progreso",
+        "inProgressDescription": "Nuestra IA está haciendo su magia...",
+        "resultTitle": "Resultado del Análisis de IA",
+        "detailedAnalysisLabel": "Análisis Detallado",
+        "summaryLabel": "Resumen"
     }
 }

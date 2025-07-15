@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Upload, AlertCircle, Sparkles } from 'lucide-react';
+import { useDictionary } from '@/hooks/use-dictionary';
 
 type AnalysisResult = {
   summary: string | null;
@@ -28,6 +29,9 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const dict = useDictionary();
+
+  if (!dict) return null;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -45,7 +49,7 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
 
   const handleAnalysis = async () => {
     if (!file || !previewUrl) {
-      setError('Please select a photo first.');
+      setError(dict.photoAnalysis.selectPhotoError);
       return;
     }
 
@@ -61,7 +65,7 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
         setResult(analysisResult);
       }
     } catch (e) {
-      setError('An unexpected error occurred. Please try again.');
+      setError(dict.photoAnalysis.unexpectedError);
     } finally {
       setLoading(false);
     }
@@ -78,7 +82,7 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
         <CardContent className="p-6">
           <div className="grid gap-4">
             <div className="space-y-2">
-              <Label htmlFor="photo-upload">Upload Photo</Label>
+              <Label htmlFor="photo-upload">{dict.photoAnalysis.uploadLabel}</Label>
               <Input id="photo-upload" type="file" accept="image/*" onChange={handleFileChange} />
             </div>
             {previewUrl && (
@@ -90,12 +94,12 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
               {loading ? (
                 <>
                   <Skeleton className="h-5 w-5 mr-2 animate-spin" />
-                  Analyzing...
+                  {dict.photoAnalysis.analyzingButton}
                 </>
               ) : (
                 <>
                   <Upload className="mr-2 h-5 w-5" />
-                  Analyze Photo
+                  {dict.photoAnalysis.analyzeButton}
                 </>
               )}
             </Button>
@@ -106,7 +110,7 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{dict.photoAnalysis.errorTitle}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -114,8 +118,8 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
       {loading && (
         <Card>
           <CardHeader>
-            <CardTitle>Analysis in Progress</CardTitle>
-            <CardDescription>Our AI is working its magic...</CardDescription>
+            <CardTitle>{dict.photoAnalysis.inProgressTitle}</CardTitle>
+            <CardDescription>{dict.photoAnalysis.inProgressDescription}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Skeleton className="h-4 w-full" />
@@ -130,19 +134,19 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-6 h-6 text-primary" />
-              AI Analysis Result
+              {dict.photoAnalysis.resultTitle}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {result.analysis && (
                 <div>
-                    <h3 className="font-semibold text-lg">Detailed Analysis</h3>
+                    <h3 className="font-semibold text-lg">{dict.photoAnalysis.detailedAnalysisLabel}</h3>
                     <p className="text-muted-foreground whitespace-pre-wrap">{result.analysis}</p>
                 </div>
             )}
             {result.summary && (
                 <div>
-                    <h3 className="font-semibold text-lg">Summary</h3>
+                    <h3 className="font-semibold text-lg">{dict.photoAnalysis.summaryLabel}</h3>
                     <p className="text-muted-foreground whitespace-pre-wrap">{result.summary}</p>
 
                 </div>
