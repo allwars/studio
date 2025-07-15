@@ -187,7 +187,11 @@
             "time_min": "Time (min)",
             "every_sec": "Every (sec)",
             "work": "Work (sec)",
-            "rest": "Rest (sec)"
+            "rest": "Rest (sec)",
+            "round_times": "Round Times",
+            "round": "Round",
+            "time": "Time",
+            "in": "in"
         },
         "for_time": {
             "title": "FOR TIME",

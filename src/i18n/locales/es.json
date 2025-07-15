@@ -187,7 +187,11 @@
             "time_min": "Tiempo (min)",
             "every_sec": "Cada (seg)",
             "work": "Trabajo (seg)",
-            "rest": "Descanso (seg)"
+            "rest": "Descanso (seg)",
+            "round_times": "Tiempos por Ronda",
+            "round": "Ronda",
+            "time": "Tiempo",
+            "in": "en"
         },
         "for_time": {
             "title": "FOR TIME",

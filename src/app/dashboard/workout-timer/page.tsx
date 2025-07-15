@@ -3,13 +3,15 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, RefreshCw, Timer as TimerIcon, Plus, Check } from 'lucide-react';
+import { Play, Pause, RefreshCw, Timer as TimerIcon, Plus, Check, History } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useDictionary } from '@/hooks/use-dictionary';
 import { cn } from '@/lib/utils';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 
 type TimerMode = 'FOR_TIME' | 'AMRAP' | 'EMOM' | 'TABATA' | 'CHRONO';
 
@@ -31,6 +33,7 @@ export default function WorkoutTimerPage() {
   const [forTimeLimit, setForTimeLimit] = useState(10 * 60); // 10 minutes
   const [forTimeRounds, setForTimeRounds] = useState(5);
   const [currentRound, setCurrentRound] = useState(0);
+  const [lapTimes, setLapTimes] = useState<number[]>([]);
 
   // AMRAP settings
   const [amrapTime, setAmrapTime] = useState(20 * 60); // 20 minutes
@@ -65,16 +68,20 @@ export default function WorkoutTimerPage() {
     };
   }, [isActive]);
   
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60).toString().padStart(2, '0');
+    const seconds = (timeInSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  };
+  
   // Logic for stopping timers
   useEffect(() => {
     if (!isActive) return;
 
     // FOR_TIME stop conditions
-    if (mode === 'FOR_TIME') {
-      if (time >= forTimeLimit || currentRound >= forTimeRounds) {
+    if (mode === 'FOR_TIME' && currentRound >= forTimeRounds) {
         stopTimer();
         setIsFinished(true);
-      }
     }
 
     // AMRAP stop condition
@@ -86,7 +93,7 @@ export default function WorkoutTimerPage() {
     }
     // Note: EMOM and TABATA would have more complex interval logic
     
-  }, [time, currentRound, isActive, mode, stopTimer, forTimeLimit, forTimeRounds, amrapTime]);
+  }, [time, currentRound, isActive, mode, stopTimer, forTimeRounds, amrapTime]);
 
 
   const handleStartPause = () => {
@@ -94,6 +101,7 @@ export default function WorkoutTimerPage() {
         // Reset state when starting a new timer
         setTime(0);
         setCurrentRound(0);
+        setLapTimes([]);
         setIsConfiguring(false);
         setIsFinished(false);
         setIsActive(true);
@@ -106,22 +114,15 @@ export default function WorkoutTimerPage() {
     stopTimer();
     setTime(0);
     setCurrentRound(0);
+    setLapTimes([]);
     setIsConfiguring(true);
     setIsFinished(false);
   };
   
-  const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60).toString().padStart(2, '0');
-    const seconds = (timeInSeconds % 60).toString().padStart(2, '0');
-    return `${minutes}:${seconds}`;
-  };
-
   const handleNextRound = () => {
-    if (mode === 'FOR_TIME') {
-      if (currentRound < forTimeRounds) {
-          setCurrentRound(prev => prev + 1);
-      }
-    } else if (mode === 'AMRAP') {
+    const canAddRound = mode === 'FOR_TIME' ? currentRound < forTimeRounds : true;
+    if (isActive && canAddRound) {
+        setLapTimes(prev => [...prev, time]);
         setCurrentRound(prev => prev + 1);
     }
   }
@@ -209,11 +210,11 @@ export default function WorkoutTimerPage() {
     let summaryMessage = '';
     if (isFinished) {
         if (mode === 'FOR_TIME') {
-            summaryMessage = `${timerDict.finished} ${currentRound}/${forTimeRounds} ${timerDict.labels.rounds.toLowerCase()} en ${finalTime}`;
+            summaryMessage = `${timerDict.finished} ${currentRound}/${forTimeRounds} ${timerDict.labels.rounds.toLowerCase()} ${timerDict.labels.in} ${finalTime}`;
         } else if (mode === 'AMRAP') {
             summaryMessage = `${timerDict.finished} ${currentRound} ${timerDict.labels.rounds.toLowerCase()}`;
         } else {
-             summaryMessage = `${timerDict.finished} Tiempo: ${finalTime}`;
+             summaryMessage = `${timerDict.finished} ${timerDict.labels.time}: ${finalTime}`;
         }
     }
 
@@ -266,12 +267,41 @@ export default function WorkoutTimerPage() {
     );
     
     const renderFinishedState = () => (
-         <div className="md:col-span-2 flex flex-col items-center justify-center gap-4 p-6">
+         <div className="md:col-span-2 flex flex-col items-center justify-center gap-6 p-6">
             <div className="flex flex-col items-center text-center">
                 <Check size={80} className="text-green-500 mb-4" />
                 <h2 className="text-2xl font-bold">{summaryMessage}</h2>
             </div>
-             <Button onClick={handleReset} variant="outline" size="lg">
+            
+            {lapTimes.length > 0 && (
+              <div className="w-full">
+                <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                  <History /> {timerDict.labels.round_times}
+                </h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{timerDict.labels.round}</TableHead>
+                      <TableHead className="text-right">{timerDict.labels.time}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {lapTimes.map((lapTime, index) => {
+                       const previousLapTime = index > 0 ? lapTimes[index - 1] : 0;
+                       const roundDuration = lapTime - previousLapTime;
+                       return (
+                           <TableRow key={index}>
+                                <TableCell>{timerDict.labels.round} {index + 1}</TableCell>
+                                <TableCell className="text-right font-mono">{formatTime(roundDuration)}</TableCell>
+                           </TableRow>
+                       )
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+
+            <Button onClick={handleReset} variant="outline" size="lg">
                 <RefreshCw className="mr-2" />
                 {timerDict.reset_button}
             </Button>
