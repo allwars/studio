@@ -102,11 +102,11 @@
     "pantry": {
         "title": "Tu Despensa",
         "description": "Gestiona los ingredientes que tienes en casa. Tu plan de dieta se basará en esta lista.",
-        "addItemTitle": "Añadir Ingredientes",
+        "addItemTitle": "Añadir a la Despensa",
         "itemLabel": "Nombre del Ingrediente",
         "itemPlaceholder": "Ej: Pechuga de pollo, arroz integral, brócoli",
         "addButtonLabel": "Añadir ingrediente",
-        "currentItemsTitle": "Ingredientes Actuales",
+        "currentItemsTitle": "Lista de Alimentos",
         "currentItemsDescription": "Esto es lo que M2H usará para crear tus comidas.",
         "removeItemLabel": "Eliminar",
         "editItemLabel": "Editar",
@@ -128,7 +128,7 @@
         "selectUnit": "Seleccionar unidad",
         "itemRemoved": "Ingrediente eliminado de la despensa.",
         "invalidInput": "Por favor, rellena todos los campos correctamente.",
-        "nutritionalInfo": "Info. Nutricional (por 100g)",
+        "nutritionalInfo": "Info. Nutricional",
         "calories": "Calorías",
         "protein": "Proteína",
         "carbs": "Carbohidratos",
@@ -166,5 +166,41 @@
         "addButton": "Añadir a la Despensa",
         "toastTitle": "¡Artículos Añadidos!",
         "toastDescription": "Los nuevos artículos se han añadido a tu despensa."
+    },
+    "timer": {
+        "title": "Temporizador de Entrenamiento",
+        "description": "Selecciona un tipo de temporizador y empieza tu entrenamiento.",
+        "start_button": "Iniciar Temporizador",
+        "pause_button": "Pausar",
+        "reset_button": "Reiniciar",
+        "skip_button": "Saltar Ronda",
+        "labels": {
+            "time_cap_min": "Límite (min)",
+            "rounds": "Rondas",
+            "time_min": "Tiempo (min)",
+            "every_sec": "Cada (seg)",
+            "work": "Trabajo (seg)",
+            "rest": "Descanso (seg)"
+        },
+        "for_time": {
+            "title": "FOR TIME",
+            "description": "Completa el trabajo lo más rápido posible dentro del límite de tiempo."
+        },
+        "amrap": {
+            "title": "AMRAP",
+            "description": "Tantas rondas/repeticiones como sea posible en un tiempo determinado."
+        },
+        "emom": {
+            "title": "EMOM",
+            "description": "Cada minuto en el minuto, una nueva ronda comienza."
+        },
+        "tabata": {
+            "title": "TABATA",
+            "description": "Entrenamiento de intervalos de alta intensidad con períodos de trabajo y descanso."
+        },
+        "chrono": {
+            "title": "CRONO",
+            "description": "Un cronómetro simple para medir tus actividades."
+        }
     }
 }

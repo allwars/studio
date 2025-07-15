@@ -102,11 +102,11 @@
     "pantry": {
         "title": "Your Pantry",
         "description": "Manage the ingredients you have at home. Your diet plan will be based on this list.",
-        "addItemTitle": "Add Ingredients",
+        "addItemTitle": "Add to Pantry",
         "itemLabel": "Ingredient Name",
         "itemPlaceholder": "e.g., Chicken breast, brown rice, broccoli",
         "addButtonLabel": "Add item",
-        "currentItemsTitle": "Current Ingredients",
+        "currentItemsTitle": "Food List",
         "currentItemsDescription": "This is what M2H will use to create your meals.",
         "removeItemLabel": "Remove",
         "editItemLabel": "Edit",
@@ -128,7 +128,7 @@
         "selectUnit": "Select unit",
         "itemRemoved": "Item removed from pantry.",
         "invalidInput": "Please fill out all fields correctly.",
-        "nutritionalInfo": "Nutritional Info (per 100g)",
+        "nutritionalInfo": "Nutritional Info",
         "calories": "Calories",
         "protein": "Protein",
         "carbs": "Carbohydrates",
@@ -166,5 +166,41 @@
         "addButton": "Add Items to Pantry",
         "toastTitle": "Items Added!",
         "toastDescription": "The new items have been added to your pantry."
+    },
+    "timer": {
+        "title": "Workout Timer",
+        "description": "Select a timer type and start your workout.",
+        "start_button": "Start Timer",
+        "pause_button": "Pause",
+        "reset_button": "Reset",
+        "skip_button": "Skip Round",
+        "labels": {
+            "time_cap_min": "Time Cap (min)",
+            "rounds": "Rounds",
+            "time_min": "Time (min)",
+            "every_sec": "Every (sec)",
+            "work": "Work (sec)",
+            "rest": "Rest (sec)"
+        },
+        "for_time": {
+            "title": "FOR TIME",
+            "description": "Complete the work as fast as possible within the time cap."
+        },
+        "amrap": {
+            "title": "AMRAP",
+            "description": "As Many Rounds/Reps As Possible in a set time."
+        },
+        "emom": {
+            "title": "EMOM",
+            "description": "Every Minute On the Minute, a new round begins."
+        },
+        "tabata": {
+            "title": "TABATA",
+            "description": "High-intensity interval training with work and rest periods."
+        },
+        "chrono": {
+            "title": "CHRONO",
+            "description": "A simple stopwatch to time your activities."
+        }
     }
 }
