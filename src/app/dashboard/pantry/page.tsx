@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDictionary } from '@/hooks/use-dictionary';
-import { Trash2, PlusCircle, ShoppingBasket, Pencil, ChevronDown, Loader2, AlertCircle, ThumbsUp, BrainCircuit } from 'lucide-react';
+import { Trash2, PlusCircle, ShoppingBasket, Pencil, ChevronDown, Loader2, AlertCircle, ThumbsUp, BrainCircuit, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import {
@@ -227,6 +227,8 @@ export default function PantryPage() {
   const [currentItem, setCurrentItem] = useState<PantryItem | null>(null);
   const [infoCache, setInfoCache] = useState<NutritionalInfoCache>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   
   const fetchNutritionalInfo = useCallback(async (item: PantryItem, language: string) => {
     const cacheKey = item.name.toLowerCase();
@@ -343,6 +345,17 @@ export default function PantryPage() {
 
     return null;
   }
+  
+  const totalPages = Math.ceil(pantryItems.length / itemsPerPage);
+  const paginatedItems = pantryItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
 
 
   if (!dict) return null;
@@ -380,9 +393,9 @@ export default function PantryPage() {
           <CardDescription>{dict.pantry.currentItemsDescription}</CardDescription>
         </CardHeader>
         <CardContent>
-          {pantryItems.length > 0 ? (
+          {paginatedItems.length > 0 ? (
              <div className="w-full space-y-2">
-              {pantryItems.map((item) => (
+              {paginatedItems.map((item) => (
                  <div key={item.id} className="p-3 rounded-md bg-secondary transition-colors hover:bg-secondary/80">
                     <div className="flex justify-between items-center">
                         <div className="flex-1">
@@ -409,7 +422,7 @@ export default function PantryPage() {
                             </Button>
                         </div>
                     </div>
-                    <Accordion type="single" collapsible>
+                    <Accordion type="single" collapsible className="w-full">
                         <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} />
                     </Accordion>
                 </div>
@@ -419,6 +432,31 @@ export default function PantryPage() {
             <p className="text-muted-foreground">{dict.pantry.noItems}</p>
           )}
         </CardContent>
+         {totalPages > 1 && (
+          <div className="flex items-center justify-end gap-4 p-4 border-t">
+              <span className="text-sm text-muted-foreground">
+                {dict.pantry.page} {currentPage} {dict.pantry.of} {totalPages}
+              </span>
+              <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+              >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  {dict.pantry.previousPage}
+              </Button>
+              <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+              >
+                  {dict.pantry.nextPage}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+          </div>
+        )}
       </Card>
       
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

@@ -182,7 +182,11 @@
         "pantrySummaryDescription": "Un resumen de la salud de tu despensa con la tecnología de M2H.",
         "overallHealth": "Salud General de la Despensa",
         "aiTips": "Consejos de M2H",
-        "startByAddingItems": "Tu despensa está vacía. ¡Empieza añadiendo algunos ingredientes para obtener consejos personalizados!"
+        "startByAddingItems": "Tu despensa está vacía. ¡Empieza añadiendo algunos ingredientes para obtener consejos personalizados!",
+        "page": "Página",
+        "of": "de",
+        "previousPage": "Anterior",
+        "nextPage": "Siguiente"
     },
     "addToPantry": {
         "title": "Añadir a la Despensa",

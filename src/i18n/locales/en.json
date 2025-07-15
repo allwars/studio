@@ -182,7 +182,11 @@
         "pantrySummaryDescription": "An M2H-powered overview of your pantry's health.",
         "overallHealth": "Overall Pantry Health",
         "aiTips": "M2H-Powered Tips",
-        "startByAddingItems": "Your pantry is empty. Start by adding some ingredients to get personalized tips!"
+        "startByAddingItems": "Your pantry is empty. Start by adding some ingredients to get personalized tips!",
+        "page": "Page",
+        "of": "of",
+        "previousPage": "Previous",
+        "nextPage": "Next"
     },
     "addToPantry": {
         "title": "Add to Pantry",
