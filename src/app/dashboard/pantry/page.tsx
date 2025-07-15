@@ -38,6 +38,12 @@ type NutritionalInfoCache = {
   [key: string]: NutritionalInfoOutput | 'loading' | 'error';
 };
 
+const getScoreColor = (score: number) => {
+    if (score <= 30) return 'bg-red-500';
+    if (score <= 60) return 'bg-orange-500';
+    return 'bg-green-500';
+}
+
 function PantrySummary({ items, language, infoCache }: { items: PantryItem[], language: string, infoCache: NutritionalInfoCache }) {
     const dict = useDictionary();
     const [advice, setAdvice] = useState<string | null>(null);
@@ -59,8 +65,8 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
             const info = infoCache[item.name.toLowerCase()];
             return info && typeof info === 'object';
         }).length;
-
-        if (items.length > 0 && hasAllScores && scores.length > 0) {
+        
+        if (items.length > 0 && hasAllScores && scores.length > 0 && !isLoadingAdvice) {
             const fetchAdvice = async () => {
                 setIsLoadingAdvice(true);
                 const itemNames = items.map(i => i.name);
@@ -75,17 +81,12 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
             setAdvice(dict?.pantry.startByAddingItems || '');
             setIsLoadingAdvice(false);
         }
-    }, [items, scores, averageScore, language, dict, infoCache]);
+    }, [items, scores, averageScore, language, dict, infoCache, isLoadingAdvice]);
     
     if (!dict) return null;
     
-    const getScoreColor = (score: number) => {
-        if (score <= 30) return 'bg-red-500';
-        if (score <= 60) return 'bg-orange-500';
-        return 'bg-green-500';
-    }
-    
-    const allItemsLoaded = Object.keys(infoCache).length === items.length;
+    const allItemsLoaded = Object.keys(infoCache).length >= items.length && items.length > 0;
+    const someItemsLoading = Object.values(infoCache).some(v => v === 'loading');
 
     return (
         <Card>
@@ -99,13 +100,13 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
                 <div>
                     <Label>{dict.pantry.overallHealth}</Label>
                     <div className="flex items-center gap-4 mt-1">
-                        {!allItemsLoaded && items.length > 0 ? (
+                        {(!allItemsLoaded || someItemsLoading) && items.length > 0 ? (
                              <Skeleton className="h-6 w-full" />
                         ) : (
                             <>
                             <Progress value={averageScore} className="w-full" />
                             <span className={cn("text-lg font-bold text-white px-3 py-1 rounded-md", getScoreColor(averageScore))}>
-                                {averageScore}/100
+                                {items.length > 0 ? `${averageScore}/100` : 'N/A'}
                             </span>
                             </>
                         )}
@@ -113,8 +114,11 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
                 </div>
                 <div>
                     <Label>{dict.pantry.aiTips}</Label>
-                    {isLoadingAdvice || (!allItemsLoaded && items.length > 0) ? (
-                        <Skeleton className="h-10 w-full mt-1" />
+                    {isLoadingAdvice || ((!allItemsLoaded || someItemsLoading) && items.length > 0) ? (
+                        <div className="space-y-2 mt-1">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-5/6" />
+                        </div>
                     ) : (
                         <p className="text-sm text-muted-foreground mt-1 bg-secondary p-3 rounded-md">{advice}</p>
                     )}
@@ -146,24 +150,18 @@ function NutritionalInfo({ item, language, infoCache, fetchInfo }: { item: Pantr
     setIsOpen(prev => !prev);
   }
 
-  const getScoreColor = (score: number) => {
-    if (score <= 30) return 'bg-red-500';
-    if (score <= 60) return 'bg-orange-500';
-    return 'bg-green-500';
-  }
-
   return (
-    <AccordionItem value={item.id}>
-      <AccordionTrigger onClick={handleTriggerClick} className="group">
-        <div className="flex items-center gap-2">
-            <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+    <AccordionItem value={item.id} className="border-none">
+      <AccordionTrigger onClick={handleTriggerClick} className="group justify-start gap-2 py-1 text-xs text-muted-foreground hover:no-underline">
+        <div className="flex items-center gap-1">
+            <ChevronDown className="h-3 w-3 transition-transform duration-200 group-data-[state=open]:rotate-180" />
             {dict.pantry.nutritionalInfo}
         </div>
       </AccordionTrigger>
-      <AccordionContent>
+      <AccordionContent className="pt-2">
         {isLoading &&  <div className="flex items-center space-x-4 p-2">
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-4 w-3/4" />
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-sm text-muted-foreground">Loading...</span>
         </div>}
         {isError && 
             <Alert variant="destructive" className="mt-2">
@@ -178,21 +176,13 @@ function NutritionalInfo({ item, language, infoCache, fetchInfo }: { item: Pantr
             
             <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                    <h4 className="font-semibold mb-2">{dict.pantry.macros}</h4>
+                    <h4 className="font-semibold mb-2">{dict.pantry.macros} (per 100g)</h4>
                     <ul>
                       <li><strong>{dict.pantry.calories}:</strong> {info.calories}</li>
                       <li><strong>{dict.pantry.protein}:</strong> {info.protein}g</li>
                       <li><strong>{dict.pantry.carbs}:</strong> {info.carbohydrates}g</li>
                       <li><strong>{dict.pantry.fat}:</strong> {info.fat}g</li>
                     </ul>
-                </div>
-                <div>
-                     <h4 className="font-semibold mb-2">{dict.pantry.healthScore}</h4>
-                     <div className="flex items-center gap-2">
-                        <span className={cn("text-lg font-bold text-white px-2 py-1 rounded-md", getScoreColor(info.nutritionalScore))}>
-                            {info.nutritionalScore}/100
-                        </span>
-                     </div>
                 </div>
                  <div className="col-span-2">
                      <h4 className="font-semibold mb-2">{dict.pantry.preservatives}</h4>
@@ -343,6 +333,25 @@ export default function PantryPage() {
       description: dict.pantry.toastDescription,
     });
   };
+  
+  const renderHealthScore = (item: PantryItem) => {
+    const info = infoCache[item.name.toLowerCase()];
+
+    if (info === 'loading') {
+        return <Skeleton className="h-6 w-12 rounded-md" />;
+    }
+    
+    if (info && typeof info === 'object') {
+        return (
+            <span className={cn("text-sm font-bold text-white px-2 py-1 rounded-md", getScoreColor(info.nutritionalScore))}>
+                {info.nutritionalScore}/100
+            </span>
+        )
+    }
+
+    return null;
+  }
+
 
   if (!dict) return null;
 
@@ -372,39 +381,40 @@ export default function PantryPage() {
         </CardHeader>
         <CardContent>
           {pantryItems.length > 0 ? (
-             <Accordion type="multiple" className="w-full space-y-2">
+             <div className="w-full space-y-2">
               {pantryItems.map((item) => (
-                 <div key={item.id} className="flex items-start justify-between p-2 rounded-md bg-secondary transition-colors hover:bg-secondary/80">
-                    <div className="flex-grow">
-                        <div className="flex justify-between items-center">
+                 <div key={item.id} className="p-3 rounded-md bg-secondary transition-colors hover:bg-secondary/80">
+                    <div className="flex justify-between items-center">
+                        <div className="flex-1">
                             <span className="text-secondary-foreground font-semibold">{item.name}</span>
-                             <div className="flex items-center gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleEditClick(item)}
-                                  aria-label={`${dict.pantry.editItemLabel} ${item.name}`}
-                                >
-                                  <Pencil className="h-4 w-4 text-muted-foreground" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleRemoveItem(item.id)}
-                                  aria-label={`${dict.pantry.removeItemLabel} ${item.name}`}
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                            </div>
+                            <p className="text-sm text-muted-foreground">{item.quantity} {dict.pantry.units_options[item.unit]}</p>
                         </div>
-                        <p className="text-sm text-muted-foreground">{item.quantity} {dict.pantry.units_options[item.unit]}</p>
-                        <Accordion type="multiple">
-                           <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} fetchInfo={fetchInfoForItem} />
-                        </Accordion>
+                        <div className="flex items-center gap-2">
+                            {renderHealthScore(item)}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEditClick(item)}
+                                aria-label={`${dict.pantry.editItemLabel} ${item.name}`}
+                            >
+                                <Pencil className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleRemoveItem(item.id)}
+                                aria-label={`${dict.pantry.removeItemLabel} ${item.name}`}
+                            >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </div>
                     </div>
+                    <Accordion type="multiple">
+                        <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} fetchInfo={fetchInfoForItem} />
+                    </Accordion>
                 </div>
               ))}
-            </Accordion>
+            </div>
           ) : (
             <p className="text-muted-foreground">{dict.pantry.noItems}</p>
           )}
