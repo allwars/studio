@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -63,6 +64,8 @@ export default function WorkoutsPage() {
   useEffect(() => {
     if (lastWorkoutFeedback) {
         localStorage.setItem('lastWorkoutFeedback', lastWorkoutFeedback);
+    } else {
+        localStorage.removeItem('lastWorkoutFeedback');
     }
   }, [lastWorkoutFeedback]);
 
@@ -77,13 +80,12 @@ export default function WorkoutsPage() {
           setWorkout(null);
         } else {
           setWorkout(result);
+          // Reset feedback after using it for generation
+          if (lastWorkoutFeedback) {
+              setLastWorkoutFeedback(undefined);
+          }
         }
         setIsLoadingWorkout(false);
-        // Reset feedback after using it for generation
-        if (lastWorkoutFeedback) {
-            setLastWorkoutFeedback(undefined);
-            localStorage.removeItem('lastWorkoutFeedback');
-        }
       };
       fetchWorkout();
     }

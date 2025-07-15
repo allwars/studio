@@ -40,18 +40,11 @@ const mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
 
 const isMealVisible = (mealType: MealType): boolean => {
     const hour = new Date().getHours();
-    switch(mealType) {
-        case 'Breakfast':
-            return hour < 12; // Visible until noon
-        case 'Lunch':
-            return hour >= 10 && hour < 17; // Visible from 10 AM to 5 PM
-        case 'Dinner':
-            return hour >= 16; // Visible from 4 PM onwards
-        case 'Snack':
-            return true; // Always visible
-        default:
-            return true;
-    }
+    if (mealType === 'Snack') return true;
+    if (mealType === 'Breakfast') return hour < 12;
+    if (mealType === 'Lunch') return hour >= 10 && hour < 17;
+    if (mealType === 'Dinner') return hour >= 16;
+    return true;
 }
 
 
