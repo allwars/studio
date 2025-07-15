@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -143,7 +144,7 @@ function NutritionalInfo({ item, language, infoCache, fetchInfo }: { item: Pantr
   const isError = info === 'error';
 
   useEffect(() => {
-    // This effect ensures that if the name changes for an open item, we refetch.
+    // This effect ensures that if the accordion is open, we fetch data.
     const cacheKey = item.name.toLowerCase();
     if (isOpen && infoCache[cacheKey] === undefined) {
       fetchInfo(item);
@@ -220,20 +221,24 @@ export default function PantryPage() {
   const [currentItem, setCurrentItem] = useState<PantryItem | null>(null);
   const [infoCache, setInfoCache] = useState<NutritionalInfoCache>({});
   
-  const fetchInfoForItem = useCallback(async (item: PantryItem) => {
-    const cacheKey = item.name.toLowerCase();
-    if (infoCache[cacheKey] && infoCache[cacheKey] !== 'error') return;
+  const fetchInfoForItem = useCallback((item: PantryItem) => {
+    // This function is now stable and doesn't depend on changing state like infoCache
+    const fetcher = async () => {
+        if (!dict) return;
+        const cacheKey = item.name.toLowerCase();
 
-    setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
-    if(!dict) return;
-    const result = await handleGetNutritionalInfo(item.name, dict.lang);
+        setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
+        
+        const result = await handleGetNutritionalInfo(item.name, dict.lang);
 
-    if (result.error) {
-      setInfoCache(prev => ({ ...prev, [cacheKey]: 'error' }));
-    } else if(result.data) {
-      setInfoCache(prev => ({ ...prev, [cacheKey]: result.data! }));
-    }
-  }, [infoCache, dict]);
+        if (result.error) {
+            setInfoCache(prev => ({ ...prev, [cacheKey]: 'error' }));
+        } else if(result.data) {
+            setInfoCache(prev => ({ ...prev, [cacheKey]: result.data! }));
+        }
+    };
+    fetcher();
+  }, [dict]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -264,10 +269,13 @@ export default function PantryPage() {
   useEffect(() => {
     if (pantryItems.length > 0 && dict) {
         pantryItems.forEach(item => {
-            fetchInfoForItem(item);
+            const cacheKey = item.name.toLowerCase();
+            if (!infoCache[cacheKey]) { // Only fetch if not already in cache or loading/error
+                fetchInfoForItem(item);
+            }
         });
     }
-  }, [pantryItems, dict, fetchInfoForItem]);
+  }, [pantryItems, dict, fetchInfoForItem, infoCache]);
 
 
   const saveItems = (items: PantryItem[]) => {
@@ -481,3 +489,5 @@ export default function PantryPage() {
     </div>
   );
 }
+
+    
