@@ -95,10 +95,22 @@
     },
     "dietPlan": {
         "title": "Your Daily Diet Plan",
-        "description": "Tailored to your goals and available ingredients.",
-        "noIngredientsError": "Your pantry is empty! Add some ingredients to generate a meal plan.",
+        "description": "Get smart meal suggestions throughout your day.",
+        "pantryEmptyTitle": "Your Pantry is Empty!",
+        "pantryEmptyDescription": "Add some ingredients to your pantry to start getting personalized meal suggestions.",
         "goToPantry": "Go to Pantry",
-        "noPlanGenerated": "Could not generate a diet plan. Please check your pantry or try again."
+        "suggestMeal": "Suggest Meal",
+        "logMeal": "Log Meal",
+        "getSuggestion": "Ready for your next meal?",
+        "logged": "Logged",
+        "mealLoggedTitle": "Meal Logged!",
+        "mealLoggedDescription": "has been added to your daily log.",
+        "mealType": {
+            "breakfast": "Breakfast",
+            "lunch": "Lunch",
+            "dinner": "Dinner",
+            "snack": "Snack"
+        }
     },
     "pantry": {
         "title": "Your Pantry",

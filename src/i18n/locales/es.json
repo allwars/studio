@@ -95,10 +95,22 @@
     },
     "dietPlan": {
         "title": "Tu Plan de Dieta Diario",
-        "description": "Adaptado a tus objetivos e ingredientes disponibles.",
-        "noIngredientsError": "¡Tu despensa está vacía! Añade algunos ingredientes para generar un plan de comidas.",
+        "description": "Obtén sugerencias de comidas inteligentes durante todo el día.",
+        "pantryEmptyTitle": "¡Tu Despensa está Vacía!",
+        "pantryEmptyDescription": "Añade algunos ingredientes a tu despensa para empezar a recibir sugerencias de comidas personalizadas.",
         "goToPantry": "Ir a la Despensa",
-        "noPlanGenerated": "No se pudo generar un plan de dieta. Revisa tu despensa o inténtalo de nuevo."
+        "suggestMeal": "Sugerir Comida",
+        "logMeal": "Registrar Comida",
+        "getSuggestion": "¿Listo para tu próxima comida?",
+        "logged": "Registrado",
+        "mealLoggedTitle": "¡Comida Registrada!",
+        "mealLoggedDescription": "se ha añadido a tu registro diario.",
+        "mealType": {
+            "breakfast": "Desayuno",
+            "lunch": "Almuerzo",
+            "dinner": "Cena",
+            "snack": "Snack"
+        }
     },
     "pantry": {
         "title": "Tu Despensa",
