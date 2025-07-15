@@ -60,33 +60,39 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
         return Math.round(totalScore / scores.length);
     }, [scores]);
 
+    const allItemsHaveScores = useMemo(() => {
+      if (items.length === 0) return false;
+      return items.every(item => {
+        const info = infoCache[item.name.toLowerCase()];
+        return info && typeof info === 'object';
+      });
+    }, [items, infoCache]);
+
     useEffect(() => {
-        const hasAllScores = scores.length === items.filter(item => {
-            const info = infoCache[item.name.toLowerCase()];
-            return info && typeof info === 'object';
-        }).length;
+        const fetchAdvice = async () => {
+            setIsLoadingAdvice(true);
+            const itemNames = items.map(i => i.name);
+            const result = await handleGeneratePantryAdvice(itemNames, averageScore, language);
+            if (result.advice) {
+                setAdvice(result.advice);
+            }
+            setIsLoadingAdvice(false);
+        };
         
-        if (items.length > 0 && hasAllScores && scores.length > 0 && !isLoadingAdvice) {
-            const fetchAdvice = async () => {
-                setIsLoadingAdvice(true);
-                const itemNames = items.map(i => i.name);
-                const result = await handleGeneratePantryAdvice(itemNames, averageScore, language);
-                if (result.advice) {
-                    setAdvice(result.advice);
-                }
-                setIsLoadingAdvice(false);
-            };
+        if (allItemsHaveScores) {
             fetchAdvice();
-        } else if (items.length === 0) {
-            setAdvice(dict?.pantry.startByAddingItems || '');
+        } else if (items.length === 0 && dict) {
+            setAdvice(dict.pantry.startByAddingItems);
             setIsLoadingAdvice(false);
         }
-    }, [items, scores, averageScore, language, dict, infoCache, isLoadingAdvice]);
+    }, [allItemsHaveScores, items, averageScore, language, dict]);
     
     if (!dict) return null;
     
-    const allItemsLoaded = Object.keys(infoCache).length >= items.length && items.length > 0;
     const someItemsLoading = Object.values(infoCache).some(v => v === 'loading');
+    const showAdviceLoader = isLoadingAdvice || (someItemsLoading && items.length > 0);
+    const showScoreLoader = (someItemsLoading && items.length > 0) || (items.length > 0 && !allItemsHaveScores);
+
 
     return (
         <Card>
@@ -100,7 +106,7 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
                 <div>
                     <Label>{dict.pantry.overallHealth}</Label>
                     <div className="flex items-center gap-4 mt-1">
-                        {(!allItemsLoaded || someItemsLoading) && items.length > 0 ? (
+                        {showScoreLoader ? (
                              <Skeleton className="h-6 w-full" />
                         ) : (
                             <>
@@ -114,7 +120,7 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
                 </div>
                 <div>
                     <Label>{dict.pantry.aiTips}</Label>
-                    {isLoadingAdvice || ((!allItemsLoaded || someItemsLoading) && items.length > 0) ? (
+                    {showAdviceLoader ? (
                         <div className="space-y-2 mt-1">
                             <Skeleton className="h-4 w-full" />
                             <Skeleton className="h-4 w-5/6" />

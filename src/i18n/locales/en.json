@@ -73,11 +73,11 @@
     },
     "mealAnalysis": {
         "title": "Meal Photo Analysis",
-        "description": "Take a picture of your meal and our AI will provide a nutritional breakdown."
+        "description": "Take a picture of your meal and M2H will provide a nutritional breakdown."
     },
     "progressAnalysis": {
         "title": "Body Progress Analysis",
-        "description": "Upload a photo to track your fitness journey. Our AI will analyze changes and provide feedback."
+        "description": "Upload a photo to track your fitness journey. M2H will analyze changes and provide feedback."
     },
     "photoAnalysis": {
         "uploadLabel": "Upload Photo",
@@ -87,8 +87,8 @@
         "unexpectedError": "An unexpected error occurred. Please try again.",
         "errorTitle": "Error",
         "inProgressTitle": "Analysis in Progress",
-        "inProgressDescription": "Our AI is working its magic...",
-        "resultTitle": "AI Analysis Result",
+        "inProgressDescription": "M2H is working its magic...",
+        "resultTitle": "M2H Analysis Result",
         "detailedAnalysisLabel": "Detailed Analysis",
         "summaryLabel": "Summary"
     },
@@ -107,7 +107,7 @@
         "itemPlaceholder": "e.g., Chicken breast, brown rice, broccoli",
         "addButtonLabel": "Add item",
         "currentItemsTitle": "Current Ingredients",
-        "currentItemsDescription": "This is what our AI will use to create your meals.",
+        "currentItemsDescription": "This is what M2H will use to create your meals.",
         "removeItemLabel": "Remove",
         "editItemLabel": "Edit",
         "editItemTitle": "Edit Ingredient",
@@ -139,9 +139,9 @@
         "noPreservatives": "No preservatives",
         "errorFetchingInfo": "Could not fetch nutritional information for this item.",
         "pantrySummaryTitle": "Pantry Summary",
-        "pantrySummaryDescription": "An AI-powered overview of your pantry's health.",
+        "pantrySummaryDescription": "An M2H-powered overview of your pantry's health.",
         "overallHealth": "Overall Pantry Health",
-        "aiTips": "AI-Powered Tips",
+        "aiTips": "M2H-Powered Tips",
         "startByAddingItems": "Your pantry is empty. Start by adding some ingredients to get personalized tips!"
     },
     "addToPantry": {
@@ -160,7 +160,7 @@
         "analyzingButton": "Analyzing...",
         "noInputError": "Please provide an image or text to analyze.",
         "extractedTitle": "Extracted Items",
-        "extractedDescription": "Review and edit the items found by the AI, then add them to your pantry.",
+        "extractedDescription": "Review and edit the items found by M2H, then add them to your pantry.",
         "noItemsFound": "No items could be extracted. Please try again with a clearer image or text.",
         "addButton": "Add Items to Pantry",
         "toastTitle": "Items Added!",

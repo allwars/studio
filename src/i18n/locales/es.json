@@ -73,11 +73,11 @@
     },
     "mealAnalysis": {
         "title": "Análisis de Foto de Comida",
-        "description": "Toma una foto de tu comida y nuestra IA te proporcionará un desglose nutricional."
+        "description": "Toma una foto de tu comida y M2H te proporcionará un desglose nutricional."
     },
     "progressAnalysis": {
         "title": "Análisis de Progreso Corporal",
-        "description": "Sube una foto para seguir tu viaje de fitness. Nuestra IA analizará los cambios y te dará retroalimentación."
+        "description": "Sube una foto para seguir tu viaje de fitness. M2H analizará los cambios y te dará retroalimentación."
     },
     "photoAnalysis": {
         "uploadLabel": "Subir Foto",
@@ -87,8 +87,8 @@
         "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
         "errorTitle": "Error",
         "inProgressTitle": "Análisis en Progreso",
-        "inProgressDescription": "Nuestra IA está haciendo su magia...",
-        "resultTitle": "Resultado del Análisis de IA",
+        "inProgressDescription": "M2H está haciendo su magia...",
+        "resultTitle": "Resultado del Análisis de M2H",
         "detailedAnalysisLabel": "Análisis Detallado",
         "summaryLabel": "Resumen"
     },
@@ -107,7 +107,7 @@
         "itemPlaceholder": "Ej: Pechuga de pollo, arroz integral, brócoli",
         "addButtonLabel": "Añadir ingrediente",
         "currentItemsTitle": "Ingredientes Actuales",
-        "currentItemsDescription": "Esto es lo que nuestra IA usará para crear tus comidas.",
+        "currentItemsDescription": "Esto es lo que M2H usará para crear tus comidas.",
         "removeItemLabel": "Eliminar",
         "editItemLabel": "Editar",
         "editItemTitle": "Editar Ingrediente",
@@ -139,9 +139,9 @@
         "noPreservatives": "No tiene conservantes",
         "errorFetchingInfo": "No se pudo obtener la información nutricional para este artículo.",
         "pantrySummaryTitle": "Resumen de la Despensa",
-        "pantrySummaryDescription": "Un resumen de la salud de tu despensa con la tecnología de IA.",
+        "pantrySummaryDescription": "Un resumen de la salud de tu despensa con la tecnología de M2H.",
         "overallHealth": "Salud General de la Despensa",
-        "aiTips": "Consejos de la IA",
+        "aiTips": "Consejos de M2H",
         "startByAddingItems": "Tu despensa está vacía. ¡Empieza añadiendo algunos ingredientes para obtener consejos personalizados!"
     },
     "addToPantry": {
@@ -160,7 +160,7 @@
         "analyzingButton": "Analizando...",
         "noInputError": "Por favor, proporciona una imagen o texto para analizar.",
         "extractedTitle": "Artículos Extraídos",
-        "extractedDescription": "Revisa y edita los artículos encontrados por la IA, y luego añádelos a tu despensa.",
+        "extractedDescription": "Revisa y edita los artículos encontrados por M2H, y luego añádelos a tu despensa.",
         "noItemsFound": "No se pudieron extraer artículos. Prueba con una imagen o texto más claros.",
         "addButton": "Añadir a la Despensa",
         "toastTitle": "¡Artículos Añadidos!",
