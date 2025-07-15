@@ -52,7 +52,7 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
     
     const scores = useMemo(() => items.map(item => {
         const info = infoCache[item.name.toLowerCase()];
-        return typeof info === 'object' ? info.nutritionalScore : null;
+        return (typeof info === 'object' && info.nutritionalScore) ? info.nutritionalScore : null;
     }).filter(score => score !== null) as number[], [items, infoCache]);
 
     const averageScore = useMemo(() => {
@@ -65,7 +65,7 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
       if (items.length === 0) return false;
       return items.every(item => {
         const info = infoCache[item.name.toLowerCase()];
-        return info && typeof info === 'object';
+        return info && (typeof info === 'object' || info === 'error');
       });
     }, [items, infoCache]);
 
@@ -116,7 +116,7 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
                             <>
                             <Progress value={averageScore} className="w-full" />
                             <span className={cn("text-lg font-bold text-white px-3 py-1 rounded-md", getScoreColor(averageScore))}>
-                                {items.length > 0 ? `${averageScore}/100` : 'N/A'}
+                                {scores.length > 0 ? `${averageScore}/100` : 'N/A'}
                             </span>
                             </>
                         )}
@@ -427,7 +427,7 @@ export default function PantryPage() {
                             </Button>
                         </div>
                     </div>
-                    <Accordion type="multiple" defaultValue={[item.id]}>
+                    <Accordion type="single" collapsible>
                         <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} />
                     </Accordion>
                 </div>
@@ -493,4 +493,6 @@ export default function PantryPage() {
     </div>
   );
 }
+    
+
     
