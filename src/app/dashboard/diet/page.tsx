@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -27,13 +28,21 @@ type DailyMeals = {
 
 const mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
 
-const getCurrentMealType = (): Lowercase<MealType> => {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return 'breakfast';
-  if (hour >= 12 && hour < 17) return 'lunch';
-  if (hour >= 17 && hour < 21) return 'dinner';
-  return 'snack';
-};
+const isMealVisible = (mealType: MealType): boolean => {
+    const hour = new Date().getHours();
+    switch(mealType) {
+        case 'Breakfast':
+            return hour < 12; // Visible until noon
+        case 'Lunch':
+            return hour >= 10 && hour < 17; // Visible from 10 AM to 5 PM
+        case 'Dinner':
+            return hour >= 16; // Visible from 4 PM onwards
+        case 'Snack':
+            return true; // Always visible
+        default:
+            return true;
+    }
+}
 
 
 export default function DietPage() {
@@ -49,6 +58,13 @@ export default function DietPage() {
   
   const [pantryItems, setPantryItems] = useState<string[]>([]);
   const [isPantryLoading, setIsPantryLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    // This timer updates the current time every minute to re-evaluate which meal cards should be visible.
+    const timerId = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timerId);
+  }, []);
 
   useEffect(() => {
     // Load pantry items from localStorage
@@ -109,7 +125,11 @@ export default function DietPage() {
   const renderMealCard = (mealType: MealType) => {
     const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
     const mealState = meals[mealKey];
-    const isCurrentMeal = getCurrentMealType() === mealKey;
+    
+    // Hide future meals that are not logged and have no suggestion yet
+    if (!isMealVisible(mealType) && !mealState.isLogged && !mealState.suggestion) {
+        return null;
+    }
 
     if (mealState.isLoading) {
        return (
@@ -160,7 +180,7 @@ export default function DietPage() {
     }
 
     return (
-        <Card className={cn("flex flex-col justify-between h-[380px]", isCurrentMeal && "border-primary")}>
+        <Card className={cn("flex flex-col justify-between h-[380px]")}>
             <CardHeader>
                 <CardTitle>{dict.dietPlan.mealType[mealKey]}</CardTitle>
                 <CardDescription>{dict.dietPlan.getSuggestion}</CardDescription>
@@ -213,11 +233,10 @@ export default function DietPage() {
         <p className="text-muted-foreground">{dict.dietPlan.description}</p>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-         {mealTypes.map(type => (
-            <div key={type}>
-                {renderMealCard(type)}
-            </div>
-         ))}
+         {mealTypes.map(type => {
+            const renderedCard = renderMealCard(type);
+            return renderedCard ? <div key={type}>{renderedCard}</div> : null;
+         })}
       </div>
     </div>
   );
