@@ -11,6 +11,7 @@ import { useState } from 'react';
 import LoadingSpinner from '@/components/loading-spinner';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { DumbbellIcon } from '@/components/icons';
 
 export default function ProgressAnalysisPage() {
   const dict = useDictionary();
@@ -73,6 +74,8 @@ export default function ProgressAnalysisPage() {
         title={dict.progressAnalysis.title}
         description={dict.progressAnalysis.description}
         onAnalyze={onAnalyze}
+        loadingIcon={<DumbbellIcon className="h-8 w-8 text-primary" />}
+        loadingText={dict.photoAnalysis.analyzingButton}
       />
 
       {(isLoadingSuggestion || suggestion) && (

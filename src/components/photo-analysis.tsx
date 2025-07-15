@@ -10,6 +10,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Upload, AlertCircle, Sparkles } from 'lucide-react';
 import { useDictionary } from '@/hooks/use-dictionary';
+import LoadingSpinner from './loading-spinner';
+import type { ReactNode } from 'react';
 
 type AnalysisResult = {
   summary: string | null;
@@ -21,9 +23,11 @@ interface PhotoAnalysisProps {
   title: string;
   description: string;
   onAnalyze: (photoDataUri: string) => Promise<AnalysisResult>;
+  loadingIcon?: ReactNode;
+  loadingText?: string;
 }
 
-export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAnalysisProps) {
+export default function PhotoAnalysis({ title, description, onAnalyze, loadingIcon, loadingText }: PhotoAnalysisProps) {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -93,8 +97,7 @@ export default function PhotoAnalysis({ title, description, onAnalyze }: PhotoAn
             <Button onClick={handleAnalysis} disabled={!file || loading} size="lg">
               {loading ? (
                 <>
-                  <Skeleton className="h-5 w-5 mr-2 animate-spin" />
-                  {dict.photoAnalysis.analyzingButton}
+                   <LoadingSpinner icon={loadingIcon} text={loadingText} />
                 </>
               ) : (
                 <>

@@ -27,6 +27,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import LoadingSpinner from '@/components/loading-spinner';
+import { UtensilsIcon } from '@/components/icons';
 
 export type PantryItem = {
   id: string;
@@ -224,6 +226,7 @@ export default function PantryPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<PantryItem | null>(null);
   const [infoCache, setInfoCache] = useState<NutritionalInfoCache>({});
+  const [isLoading, setIsLoading] = useState(true);
   
   const fetchAllNutritionalInfo = useCallback(async (items: PantryItem[], language: string) => {
     setInfoCache(prev => {
@@ -273,8 +276,10 @@ export default function PantryPage() {
         }
       }
       setPantryItems(loadedItems);
-      if (dict && loadedItems.length > 0) {
-        fetchAllNutritionalInfo(loadedItems, dict.lang);
+      if (dict) {
+        fetchAllNutritionalInfo(loadedItems, dict.lang).finally(() => setIsLoading(false));
+      } else {
+        setIsLoading(false);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -372,6 +377,14 @@ export default function PantryPage() {
 
 
   if (!dict) return null;
+
+  if (isLoading) {
+    return (
+        <div className="flex justify-center items-center h-96">
+            <LoadingSpinner icon={<UtensilsIcon className="h-10 w-10 text-primary" />} text={dict.photoAnalysis.loading} />
+        </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

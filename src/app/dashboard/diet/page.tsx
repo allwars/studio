@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import DailyDietSummary from '@/components/daily-diet-summary';
 import type { ActivityLog, LoggedMealItem } from '@/lib/types';
 import LoadingSpinner from '@/components/loading-spinner';
+import { UtensilsIcon } from '@/components/icons';
 
 
 type LoggedMeal = {
@@ -247,7 +248,7 @@ export default function DietPage() {
             <CardContent className="flex-grow space-y-4">
               {mealState.isLoading && (
                  <div className="flex items-center justify-center p-4">
-                    <LoadingSpinner />
+                    <LoadingSpinner icon={<UtensilsIcon className="h-8 w-8 text-primary" />} text={dict.photoAnalysis.analyzingButton} />
                  </div>
               )}
                {mealState.error && (
@@ -275,7 +276,7 @@ export default function DietPage() {
             <CardFooter className="flex-col gap-2 mt-auto">
                  <Button className="w-full" onClick={() => handleSuggestMeal(mealType)} disabled={pantryItems.length === 0 || mealState.isLoading || isNonRepeatableAndLogged}>
                     {mealState.isLoading ? (
-                      <LoadingSpinner />
+                      <LoadingSpinner icon={<UtensilsIcon className="h-4 w-4" />} />
                     ) : (
                       <>
                         <Lightbulb className="mr-2" />
@@ -292,7 +293,7 @@ export default function DietPage() {
   if (isPantryLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <LoadingSpinner />
+        <LoadingSpinner icon={<UtensilsIcon className="h-10 w-10" />} text={dict.photoAnalysis.loading} />
       </div>
     );
   }

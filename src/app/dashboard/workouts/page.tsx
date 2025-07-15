@@ -30,6 +30,8 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import type { ActivityLog, LoggedWorkoutItem } from '@/lib/types';
+import LoadingSpinner from '@/components/loading-spinner';
+import { DumbbellIcon } from '@/components/icons';
 
 
 export default function WorkoutsPage() {
@@ -140,13 +142,8 @@ export default function WorkoutsPage() {
   const renderWorkoutContent = () => {
     if (isLoadingWorkout) {
       return (
-        <CardContent>
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-          </div>
+        <CardContent className="flex justify-center items-center min-h-[400px]">
+          <LoadingSpinner icon={<DumbbellIcon className="h-10 w-10 text-primary" />} text={dict.photoAnalysis.loading} />
         </CardContent>
       );
     }
