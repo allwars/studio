@@ -25,6 +25,7 @@
     "sidebar": {
         "dashboard": "Dashboard",
         "dietPlan": "Diet Plan",
+        "pantry": "Pantry",
         "mealAnalysis": "Meal Analysis",
         "progressAnalysis": "Progress Analysis",
         "profile": "Profile",
@@ -92,31 +93,25 @@
         "summaryLabel": "Summary"
     },
     "dietPlan": {
-        "title": "Daily Diet Plan",
-        "description": "Tailored for a balanced training day.",
-        "meals": [
-            {
-                "meal": "Breakfast",
-                "title": "Protein-Packed Oatmeal",
-                "description": "Oats with a scoop of protein powder, berries, and a sprinkle of chia seeds. A great start to fuel your day."
-            },
-            {
-                "meal": "Lunch",
-                "title": "Grilled Chicken Salad",
-                "description": "Mixed greens with grilled chicken breast, cherry tomatoes, cucumbers, and a light vinaigrette dressing."
-            },
-            {
-                "meal": "Dinner",
-                "title": "Salmon with Quinoa & Asparagus",
-                "description": "Baked salmon fillet served with a side of quinoa and roasted asparagus. Rich in Omega-3s and nutrients."
-            },
-            {
-                "meal": "Snack",
-                "title": "Greek Yogurt with Almonds",
-                "description": "A handful of almonds with a cup of plain Greek yogurt. Perfect for a post-workout protein boost."
-            }
-        ]
+        "title": "Your Daily Diet Plan",
+        "description": "Tailored to your goals and available ingredients.",
+        "noIngredientsError": "Your pantry is empty! Add some ingredients to generate a meal plan.",
+        "goToPantry": "Go to Pantry",
+        "noPlanGenerated": "Could not generate a diet plan. Please check your pantry or try again."
+    },
+    "pantry": {
+        "title": "Your Pantry",
+        "description": "Manage the ingredients you have at home. Your diet plan will be based on this list.",
+        "addItemTitle": "Add New Ingredient",
+        "itemLabel": "Ingredient Name",
+        "itemPlaceholder": "e.g., Chicken breast, brown rice, broccoli",
+        "addButtonLabel": "Add item",
+        "currentItemsTitle": "Current Ingredients",
+        "currentItemsDescription": "This is what our AI will use to create your meals.",
+        "removeItemLabel": "Remove",
+        "noItems": "Your pantry is empty. Add some items to get started!",
+        "saveButton": "Save Changes",
+        "toastTitle": "Pantry Updated!",
+        "toastDescription": "Your diet plan will now use your updated ingredient list."
     }
 }
-
-    

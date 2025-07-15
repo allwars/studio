@@ -45,10 +45,23 @@ export default function DashboardPage() {
   
   useEffect(() => {
     if (dict) {
+      const storedGoal = localStorage.getItem('fitnessGoal');
       const defaultGoal = dict.dashboard.goals.gain_muscle.title;
-      setGoal(defaultGoal);
+      setGoal(storedGoal || defaultGoal);
     }
   }, [dict]);
+  
+  useEffect(() => {
+    if (goal) {
+        localStorage.setItem('fitnessGoal', goal);
+    }
+  }, [goal]);
+
+  useEffect(() => {
+    if (lastWorkoutFeedback) {
+        localStorage.setItem('lastWorkoutFeedback', lastWorkoutFeedback);
+    }
+  }, [lastWorkoutFeedback]);
 
   useEffect(() => {
     if (goal && dict) {
@@ -63,8 +76,10 @@ export default function DashboardPage() {
           setWorkout(result);
         }
         setIsLoadingWorkout(false);
-        // Reset feedback after using it
-        setLastWorkoutFeedback(undefined);
+        // Reset feedback after using it for generation
+        if (lastWorkoutFeedback) {
+            setLastWorkoutFeedback(undefined);
+        }
       };
       fetchWorkout();
     }
@@ -302,5 +317,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    

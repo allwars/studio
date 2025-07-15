@@ -25,6 +25,7 @@ import {
   LogOut,
   Dumbbell,
   Languages,
+  ShoppingBasket,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -49,6 +50,7 @@ export default function DashboardLayout({
   const menuItems = [
     { href: '/dashboard', label: dict.sidebar.dashboard, icon: LayoutDashboard },
     { href: '/dashboard/diet', label: dict.sidebar.dietPlan, icon: UtensilsCrossed },
+    { href: '/dashboard/pantry', label: dict.sidebar.pantry, icon: ShoppingBasket },
     { href: '/dashboard/meal-analysis', label: dict.sidebar.mealAnalysis, icon: Camera },
     { href: '/dashboard/progress-analysis', label: dict.sidebar.progressAnalysis, icon: Sparkles },
     { href: '/dashboard/profile', label: dict.sidebar.profile, icon: User },

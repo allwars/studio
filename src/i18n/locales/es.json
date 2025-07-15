@@ -25,6 +25,7 @@
     "sidebar": {
         "dashboard": "Panel",
         "dietPlan": "Plan de Dieta",
+        "pantry": "Despensa",
         "mealAnalysis": "Análisis de Comida",
         "progressAnalysis": "Análisis de Progreso",
         "profile": "Perfil",
@@ -92,31 +93,25 @@
         "summaryLabel": "Resumen"
     },
     "dietPlan": {
-        "title": "Plan de Dieta Diario",
-        "description": "Diseñado para un día de entrenamiento equilibrado.",
-        "meals": [
-            {
-                "meal": "Desayuno",
-                "title": "Avena Rica en Proteínas",
-                "description": "Avena con una cucharada de proteína en polvo, bayas y una pizca de semillas de chía. Un gran comienzo para energizar tu día."
-            },
-            {
-                "meal": "Almuerzo",
-                "title": "Ensalada de Pollo a la Parrilla",
-                "description": "Mezcla de hojas verdes con pechuga de pollo a la parrilla, tomates cherry, pepinos y un aderezo ligero de vinagreta."
-            },
-            {
-                "meal": "Cena",
-                "title": "Salmón con Quinoa y Espárragos",
-                "description": "Filete de salmón al horno servido con una guarnición de quinoa y espárragos asados. Rico en Omega-3 y nutrientes."
-            },
-            {
-                "meal": "Snack",
-                "title": "Yogur Griego con Almendras",
-                "description": "Un puñado de almendras con una taza de yogur griego natural. Perfecto para un impulso de proteínas después del entrenamiento."
-            }
-        ]
+        "title": "Tu Plan de Dieta Diario",
+        "description": "Adaptado a tus objetivos e ingredientes disponibles.",
+        "noIngredientsError": "¡Tu despensa está vacía! Añade algunos ingredientes para generar un plan de comidas.",
+        "goToPantry": "Ir a la Despensa",
+        "noPlanGenerated": "No se pudo generar un plan de dieta. Revisa tu despensa o inténtalo de nuevo."
+    },
+    "pantry": {
+        "title": "Tu Despensa",
+        "description": "Gestiona los ingredientes que tienes en casa. Tu plan de dieta se basará en esta lista.",
+        "addItemTitle": "Añadir Nuevo Ingrediente",
+        "itemLabel": "Nombre del Ingrediente",
+        "itemPlaceholder": "Ej: Pechuga de pollo, arroz integral, brócoli",
+        "addButtonLabel": "Añadir ingrediente",
+        "currentItemsTitle": "Ingredientes Actuales",
+        "currentItemsDescription": "Esto es lo que nuestra IA usará para crear tus comidas.",
+        "removeItemLabel": "Eliminar",
+        "noItems": "Tu despensa está vacía. ¡Añade algunos productos para empezar!",
+        "saveButton": "Guardar Cambios",
+        "toastTitle": "¡Despensa Actualizada!",
+        "toastDescription": "Tu plan de dieta usará ahora tu lista de ingredientes actualizada."
     }
 }
-
-    
