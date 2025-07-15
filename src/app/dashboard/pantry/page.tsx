@@ -54,7 +54,7 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
     }, [scores]);
 
     useEffect(() => {
-        if (items.length > 0 && scores.length === items.length) {
+        if (items.length > 0 && scores.length > 0) {
             const fetchAdvice = async () => {
                 setIsLoading(true);
                 const itemNames = items.map(i => i.name);
@@ -67,8 +67,9 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
             fetchAdvice();
         } else if (items.length === 0) {
             setAdvice(dict?.pantry.startByAddingItems || '');
+            setIsLoading(false);
         }
-    }, [items, scores, averageScore, language, dict]);
+    }, [items, scores.length, averageScore, language, dict]);
     
     if (!dict) return null;
     
@@ -98,7 +99,7 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
                 </div>
                 <div>
                     <Label>{dict.pantry.aiTips}</Label>
-                    {isLoading ? (
+                    {isLoading && items.length > 0 ? (
                         <Skeleton className="h-10 w-full mt-1" />
                     ) : (
                         <p className="text-sm text-muted-foreground mt-1 bg-secondary p-3 rounded-md">{advice}</p>
@@ -118,7 +119,7 @@ function NutritionalInfo({ item, language, infoCache, setInfoCache }: { item: Pa
 
   const fetchInfo = useCallback(async () => {
     const cacheKey = item.name.toLowerCase();
-    if (infoCache[cacheKey]) return;
+    if (infoCache[cacheKey] && infoCache[cacheKey] !== 'error') return;
 
     setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
     const result = await handleGetNutritionalInfo(item.name, language);
@@ -131,10 +132,21 @@ function NutritionalInfo({ item, language, infoCache, setInfoCache }: { item: Pa
   }, [item.name, language, infoCache, setInfoCache]);
   
   useEffect(() => {
+    if (isOpen && !info) {
+      fetchInfo();
+    }
+  }, [isOpen, info, fetchInfo]);
+  
+  useEffect(() => {
+    const cacheKey = item.name.toLowerCase();
+    if(infoCache[cacheKey]) {
+        delete infoCache[cacheKey]
+    }
     if (isOpen) {
       fetchInfo();
     }
-  }, [isOpen, fetchInfo]);
+  }, [item.name]);
+
 
   if (!dict) return null;
 
