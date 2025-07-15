@@ -147,6 +147,7 @@
     "addToPantry": {
         "title": "Añadir a la Despensa",
         "description": "Añade ingredientes subiendo una foto del ticket o pegando el texto.",
+        "backToPantry": "Volver a la Despensa",
         "photoTab": "Foto",
         "textTab": "Texto",
         "photoTitle": "Subir Foto del Ticket",

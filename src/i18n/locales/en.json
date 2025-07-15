@@ -147,6 +147,7 @@
     "addToPantry": {
         "title": "Add to Pantry",
         "description": "Add ingredients by uploading a receipt photo or pasting text.",
+        "backToPantry": "Back to Pantry",
         "photoTab": "Photo",
         "textTab": "Text",
         "photoTitle": "Upload Receipt Photo",

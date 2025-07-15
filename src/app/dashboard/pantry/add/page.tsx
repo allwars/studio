@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, List, AlertCircle, ShoppingBasket, ClipboardPaste, X } from 'lucide-react';
+import { Upload, List, AlertCircle, ShoppingBasket, ClipboardPaste, X, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { handleAnalyzeReceipt } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import type { PantryItem } from '../page';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Link from 'next/link';
 
 type ExtractedItem = {
   id: string;
@@ -126,11 +127,19 @@ export default function AddToPantryPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
-          <ShoppingBasket /> {dict.addToPantry.title}
-        </h1>
-        <p className="text-muted-foreground">{dict.addToPantry.description}</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
+            <ShoppingBasket /> {dict.addToPantry.title}
+          </h1>
+          <p className="text-muted-foreground">{dict.addToPantry.description}</p>
+        </div>
+        <Button asChild variant="outline">
+          <Link href={`/${dict.lang}/dashboard/pantry`}>
+            <ArrowLeft className="mr-2" />
+            {dict.addToPantry.backToPantry}
+          </Link>
+        </Button>
       </div>
 
       <Tabs defaultValue="photo" className="w-full">
