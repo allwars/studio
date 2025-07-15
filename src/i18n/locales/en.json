@@ -115,7 +115,18 @@
         "noItems": "Your pantry is empty. Add some items to get started!",
         "saveButton": "Save Changes",
         "toastTitle": "Pantry Updated!",
-        "toastDescription": "Your diet plan will now use your updated ingredient list."
+        "toastDescription": "Your diet plan will now use your updated ingredient list.",
+        "quantity": "Quantity",
+        "unit": "Unit",
+        "units": "units",
+        "selectUnit": "Select unit",
+        "itemRemoved": "Item removed from pantry.",
+        "invalidInput": "Please fill out all fields correctly.",
+        "nutritionalInfo": "Nutritional Info (per 100g)",
+        "calories": "Calories",
+        "protein": "Protein",
+        "carbs": "Carbohydrates",
+        "fat": "Fat"
     },
     "addToPantry": {
         "title": "Add to Pantry",
@@ -133,9 +144,9 @@
         "analyzingButton": "Analyzing...",
         "noInputError": "Please provide an image or text to analyze.",
         "extractedTitle": "Extracted Items",
-        "extractedDescription": "Review the items found by the AI. Add them to your pantry.",
+        "extractedDescription": "Review and edit the items found by the AI, then add them to your pantry.",
         "noItemsFound": "No items could be extracted. Please try again with a clearer image or text.",
-        "addButton": "Add Selected to Pantry",
+        "addButton": "Add Items to Pantry",
         "toastTitle": "Items Added!",
         "toastDescription": "The new items have been added to your pantry."
     }

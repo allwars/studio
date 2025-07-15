@@ -115,7 +115,18 @@
         "noItems": "Tu despensa está vacía. ¡Añade algunos productos para empezar!",
         "saveButton": "Guardar Cambios",
         "toastTitle": "¡Despensa Actualizada!",
-        "toastDescription": "Tu plan de dieta usará ahora tu lista de ingredientes actualizada."
+        "toastDescription": "Tu plan de dieta usará ahora tu lista de ingredientes actualizada.",
+        "quantity": "Cantidad",
+        "unit": "Unidad",
+        "units": "unidades",
+        "selectUnit": "Seleccionar unidad",
+        "itemRemoved": "Ingrediente eliminado de la despensa.",
+        "invalidInput": "Por favor, rellena todos los campos correctamente.",
+        "nutritionalInfo": "Info. Nutricional (por 100g)",
+        "calories": "Calorías",
+        "protein": "Proteína",
+        "carbs": "Carbohidratos",
+        "fat": "Grasas"
     },
     "addToPantry": {
         "title": "Añadir a la Despensa",
@@ -133,7 +144,7 @@
         "analyzingButton": "Analizando...",
         "noInputError": "Por favor, proporciona una imagen o texto para analizar.",
         "extractedTitle": "Artículos Extraídos",
-        "extractedDescription": "Revisa los artículos encontrados por la IA. Añádelos a tu despensa.",
+        "extractedDescription": "Revisa y edita los artículos encontrados por la IA, y luego añádelos a tu despensa.",
         "noItemsFound": "No se pudieron extraer artículos. Prueba con una imagen o texto más claros.",
         "addButton": "Añadir a la Despensa",
         "toastTitle": "¡Artículos Añadidos!",

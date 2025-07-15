@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDictionary } from '@/hooks/use-dictionary';
-import { Trash2, PlusCircle, ShoppingBasket, Pencil } from 'lucide-react';
+import { Trash2, PlusCircle, ShoppingBasket, Pencil, ChevronDown, Loader2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import {
@@ -17,54 +17,157 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { handleGetNutritionalInfo } from './actions';
+import type { NutritionalInfoOutput } from '@/ai/flows/get-nutritional-info-flow';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
+
+export type PantryItem = {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: 'g' | 'kg' | 'l' | 'ml' | 'units';
+};
+
+function NutritionalInfo({ item, language }: { item: PantryItem; language: string }) {
+  const [info, setInfo] = useState<NutritionalInfoOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const dict = useDictionary();
+
+  if (!dict) return null;
+
+  const fetchInfo = async () => {
+    setIsLoading(true);
+    setError(null);
+    const result = await handleGetNutritionalInfo(item.name, language);
+    if (result.error) {
+      setError(result.error);
+    } else {
+      setInfo(result.data);
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <AccordionItem value={item.id}>
+      <AccordionTrigger onClick={() => !info && fetchInfo()}>
+        <div className="flex items-center gap-2">
+            <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            {dict.pantry.nutritionalInfo}
+        </div>
+      </AccordionTrigger>
+      <AccordionContent>
+        {isLoading &&  <div className="flex items-center space-x-4 p-2">
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-4 w-3/4" />
+        </div>}
+        {error && 
+            <Alert variant="destructive" className="mt-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>{dict.photoAnalysis.errorTitle}</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        }
+        {info && (
+          <div className="space-y-2 pl-2">
+            <p className="text-sm text-muted-foreground">{info.description}</p>
+            <ul className="text-sm">
+              <li><strong>{dict.pantry.calories}:</strong> {info.calories}</li>
+              <li><strong>{dict.pantry.protein}:</strong> {info.protein}g</li>
+              <li><strong>{dict.pantry.carbs}:</strong> {info.carbohydrates}g</li>
+              <li><strong>{dict.pantry.fat}:</strong> {info.fat}g</li>
+            </ul>
+          </div>
+        )}
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+
 
 export default function PantryPage() {
   const dict = useDictionary();
   const { toast } = useToast();
-  const [pantryItems, setPantryItems] = useState<string[]>([]);
+  const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [currentItem, setCurrentItem] = useState<string | null>(null);
-  const [newItemName, setNewItemName] = useState('');
+  const [currentItem, setCurrentItem] = useState<PantryItem | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedItems = localStorage.getItem('pantryItems');
       if (storedItems) {
-        setPantryItems(JSON.parse(storedItems));
+        try {
+            const parsedItems = JSON.parse(storedItems);
+            // Basic validation to check if it's the new format
+            if (Array.isArray(parsedItems) && parsedItems.every(item => typeof item === 'object' && 'id' in item && 'name' in item)) {
+                 setPantryItems(parsedItems);
+            } else if (Array.isArray(parsedItems) && parsedItems.every(item => typeof item === 'string')) {
+                // This is the old format, let's migrate it.
+                const migratedItems: PantryItem[] = parsedItems.map((name: string) => ({
+                    id: crypto.randomUUID(),
+                    name,
+                    quantity: 1,
+                    unit: 'units',
+                }));
+                setPantryItems(migratedItems);
+                localStorage.setItem('pantryItems', JSON.stringify(migratedItems));
+            }
+        } catch (e) {
+            console.error("Failed to parse pantry items from localStorage", e);
+            setPantryItems([]);
+        }
       }
     }
   }, []);
 
-  const saveItems = (items: string[]) => {
+  const saveItems = (items: PantryItem[]) => {
     setPantryItems(items);
     localStorage.setItem('pantryItems', JSON.stringify(items));
+  };
+
+  const handleRemoveItem = (itemToRemoveId: string) => {
+    const updatedItems = pantryItems.filter((item) => item.id !== itemToRemoveId);
+    saveItems(updatedItems);
     toast({
-      title: dict.pantry.toastTitle,
-      description: dict.pantry.toastDescription,
+        title: dict.pantry.itemRemoved,
     });
   };
 
-  const handleRemoveItem = (itemToRemove: string) => {
-    const updatedItems = pantryItems.filter((item) => item !== itemToRemove);
-    saveItems(updatedItems);
-  };
-
-  const handleEditClick = (item: string) => {
+  const handleEditClick = (item: PantryItem) => {
     setCurrentItem(item);
-    setNewItemName(item);
     setIsEditDialogOpen(true);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!currentItem || !newItemName.trim()) return;
+    if (!currentItem) return;
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const quantity = parseFloat(formData.get('quantity') as string);
+    const unit = formData.get('unit') as PantryItem['unit'];
+
+    if (!name.trim() || isNaN(quantity) || !unit) {
+        toast({
+            variant: 'destructive',
+            title: dict.pantry.invalidInput,
+        });
+        return;
+    }
+
     const updatedItems = pantryItems.map((item) =>
-      item === currentItem ? newItemName.trim() : item
+      item.id === currentItem.id ? { ...item, name, quantity, unit } : item
     );
     saveItems(updatedItems);
     setIsEditDialogOpen(false);
     setCurrentItem(null);
-    setNewItemName('');
+    toast({
+      title: dict.pantry.toastTitle,
+      description: dict.pantry.toastDescription,
+    });
   };
 
   if (!dict) return null;
@@ -93,31 +196,37 @@ export default function PantryPage() {
         </CardHeader>
         <CardContent>
           {pantryItems.length > 0 ? (
-            <ul className="space-y-2">
-              {pantryItems.map((item, index) => (
-                <li key={index} className="flex items-center justify-between p-2 rounded-md bg-secondary">
-                  <span className="text-secondary-foreground">{item}</span>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditClick(item)}
-                      aria-label={`${dict.pantry.editItemLabel} ${item}`}
-                    >
-                      <Pencil className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveItem(item)}
-                      aria-label={`${dict.pantry.removeItemLabel} ${item}`}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </li>
+             <Accordion type="multiple" className="w-full">
+              {pantryItems.map((item) => (
+                 <div key={item.id} className="group flex items-start justify-between p-2 rounded-md bg-secondary transition-colors hover:bg-secondary/80">
+                    <div className="flex-grow">
+                        <div className="flex justify-between items-center">
+                            <span className="text-secondary-foreground font-semibold">{item.name}</span>
+                             <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleEditClick(item)}
+                                  aria-label={`${dict.pantry.editItemLabel} ${item.name}`}
+                                >
+                                  <Pencil className="h-4 w-4 text-muted-foreground" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleRemoveItem(item.id)}
+                                  aria-label={`${dict.pantry.removeItemLabel} ${item.name}`}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{item.quantity} {item.unit}</p>
+                        <NutritionalInfo item={item} language={dict.lang} />
+                    </div>
+                </div>
               ))}
-            </ul>
+            </Accordion>
           ) : (
             <p className="text-muted-foreground">{dict.pantry.noItems}</p>
           )}
@@ -130,14 +239,41 @@ export default function PantryPage() {
             <DialogHeader>
               <DialogTitle>{dict.pantry.editItemTitle}</DialogTitle>
             </DialogHeader>
-            <div className="py-4">
-              <Label htmlFor="ingredient-name">{dict.pantry.itemLabel}</Label>
-              <Input
-                id="ingredient-name"
-                value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
-                className="mt-2"
-              />
+            <div className="py-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+               <div className="md:col-span-2 space-y-2">
+                  <Label htmlFor="name">{dict.pantry.itemLabel}</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    defaultValue={currentItem?.name}
+                    className="mt-2"
+                  />
+               </div>
+                <div className="space-y-2">
+                    <Label htmlFor="quantity">{dict.pantry.quantity}</Label>
+                    <Input
+                        id="quantity"
+                        name="quantity"
+                        type="number"
+                        defaultValue={currentItem?.quantity}
+                        className="mt-2"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="unit">{dict.pantry.unit}</Label>
+                     <Select name="unit" defaultValue={currentItem?.unit}>
+                        <SelectTrigger id="unit">
+                            <SelectValue placeholder={dict.pantry.selectUnit} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="g">g</SelectItem>
+                            <SelectItem value="kg">kg</SelectItem>
+                            <SelectItem value="ml">ml</SelectItem>
+                            <SelectItem value="l">l</SelectItem>
+                            <SelectItem value="units">{dict.pantry.units}</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
             <DialogFooter>
                 <DialogClose asChild>

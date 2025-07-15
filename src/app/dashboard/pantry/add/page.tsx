@@ -8,12 +8,21 @@ import { Label } from '@/components/ui/label';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, List, AlertCircle, ShoppingBasket, ClipboardPaste } from 'lucide-react';
+import { Upload, List, AlertCircle, ShoppingBasket, ClipboardPaste, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { handleAnalyzeReceipt } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
+import type { PantryItem } from '../page';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+type ExtractedItem = {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: PantryItem['unit'];
+};
 
 export default function AddToPantryPage() {
   const dict = useDictionary();
@@ -25,7 +34,7 @@ export default function AddToPantryPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [extractedItems, setExtractedItems] = useState<string[] | null>(null);
+  const [extractedItems, setExtractedItems] = useState<ExtractedItem[] | null>(null);
   
   if (!dict) return null;
 
@@ -63,18 +72,46 @@ export default function AddToPantryPage() {
     if (result.error) {
       setError(result.error);
     } else {
-      setExtractedItems(result.items || []);
+       const itemsToEdit: ExtractedItem[] = (result.items || []).map(name => ({
+        id: crypto.randomUUID(),
+        name,
+        quantity: 1,
+        unit: 'units'
+       }));
+       setExtractedItems(itemsToEdit);
     }
     
     setIsLoading(false);
   };
+
+  const handleItemChange = (id: string, field: keyof Omit<ExtractedItem, 'id'>, value: string | number) => {
+    if (!extractedItems) return;
+    const newItems = extractedItems.map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    );
+    setExtractedItems(newItems);
+  }
+
+  const handleRemoveItem = (id: string) => {
+     if (!extractedItems) return;
+     setExtractedItems(extractedItems.filter(item => item.id !== id));
+  }
   
   const handleAddItemsToPantry = () => {
     if (extractedItems) {
       const storedItems = localStorage.getItem('pantryItems');
-      const pantryItems = storedItems ? JSON.parse(storedItems) : [];
+      let pantryItems: PantryItem[] = [];
+      if (storedItems) {
+        try {
+            const parsed = JSON.parse(storedItems);
+            // Check if it's the new format
+            if(Array.isArray(parsed) && parsed.every(i => i.id && i.name)) {
+                pantryItems = parsed;
+            }
+        } catch (e) { console.error(e) }
+      }
       
-      const newItems = extractedItems.filter(item => !pantryItems.includes(item));
+      const newItems: PantryItem[] = extractedItems.map(({id, name, quantity, unit}) => ({ id, name, quantity, unit }));
       const updatedItems = [...pantryItems, ...newItems];
 
       localStorage.setItem('pantryItems', JSON.stringify(updatedItems));
@@ -173,13 +210,38 @@ export default function AddToPantryPage() {
             </CardHeader>
             <CardContent>
                 {extractedItems.length > 0 ? (
-                <ul className="space-y-2">
-                    {extractedItems.map((item, index) => (
-                    <li key={index} className="flex items-center justify-between p-2 rounded-md bg-secondary">
-                        <span className="text-secondary-foreground">{item}</span>
-                    </li>
+                <div className="space-y-4">
+                    {extractedItems.map((item) => (
+                    <div key={item.id} className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end p-2 rounded-md bg-secondary">
+                        <div className="md:col-span-2">
+                            <Label htmlFor={`name-${item.id}`}>{dict.pantry.itemLabel}</Label>
+                            <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
+                        </div>
+                        <div>
+                             <Label htmlFor={`quantity-${item.id}`}>{dict.pantry.quantity}</Label>
+                            <Input id={`quantity-${item.id}`} type="number" value={item.quantity} onChange={e => handleItemChange(item.id, 'quantity', e.target.valueAsNumber)} />
+                        </div>
+                         <div className="flex items-end gap-1">
+                            <div>
+                                <Label htmlFor={`unit-${item.id}`}>{dict.pantry.unit}</Label>
+                                <Select value={item.unit} onValueChange={value => handleItemChange(item.id, 'unit', value)}>
+                                    <SelectTrigger id={`unit-${item.id}`}>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="g">g</SelectItem>
+                                        <SelectItem value="kg">kg</SelectItem>
+                                        <SelectItem value="ml">ml</SelectItem>
+                                        <SelectItem value="l">l</SelectItem>
+                                        <SelectItem value="units">{dict.pantry.units}</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(item.id)}><X className="text-destructive"/></Button>
+                        </div>
+                    </div>
                     ))}
-                </ul>
+                </div>
                 ) : (
                 <p className="text-muted-foreground">{dict.addToPantry.noItemsFound}</p>
                 )}
