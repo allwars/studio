@@ -94,8 +94,8 @@
         "summaryLabel": "Resumen"
     },
     "dietPlan": {
-        "title": "Tu Plan de Dieta Diario",
-        "description": "Obtén sugerencias de comidas inteligentes durante todo el día.",
+        "title": "Tu Dieta Diaria",
+        "description": "Obtén sugerencias de comidas inteligentes y registra tu ingesta a lo largo del día.",
         "pantryEmptyTitle": "¡Tu Despensa está Vacía!",
         "pantryEmptyDescription": "Añade algunos ingredientes a tu despensa para empezar a recibir sugerencias de comidas personalizadas.",
         "goToPantry": "Ir a la Despensa",
@@ -118,7 +118,13 @@
         "manualLogMealName": "Nombre de la Comida",
         "manualLogPlaceholder": "Ej: Huevos revueltos con tostada",
         "manualLogMealDescription": "Notas (opcional)",
-        "manualLogDescriptionPlaceholder": "Ej: Dos huevos, una rebanada de pan integral"
+        "manualLogDescriptionPlaceholder": "Ej: Dos huevos, una rebanada de pan integral",
+        "dailySummary": {
+            "title": "Resumen Diario",
+            "description": "Un resumen de tu nutrición del día con la tecnología de M2H.",
+            "overallScore": "Puntuación Nutricional de Hoy",
+            "aiTips": "Consejos de M2H"
+        }
     },
     "pantry": {
         "title": "Tu Despensa",

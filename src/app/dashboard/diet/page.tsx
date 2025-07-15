@@ -1,12 +1,11 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDictionary } from '@/hooks/use-dictionary';
-import Image from 'next/image';
 import { handleGenerateMealSuggestion } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -18,6 +17,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import DailyDietSummary from '@/components/daily-diet-summary';
+
 
 type LoggedMeal = {
   id: string;
@@ -68,6 +69,10 @@ export default function DietPage() {
   const [isPantryLoading, setIsPantryLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  const allLoggedMeals = useMemo(() => {
+    return Object.values(meals).flatMap(m => m.loggedMeals);
+  }, [meals]);
+
   useEffect(() => {
     // This timer updates the current time every minute to re-evaluate which meal cards should be visible.
     const timerId = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -113,16 +118,13 @@ export default function DietPage() {
     }));
 
     const storedGoal = localStorage.getItem('fitnessGoal') || dict.dashboard.goals.maintain_fitness.title;
-    const allLoggedMeals = Object.values(meals)
-        .flatMap(m => m.loggedMeals)
-        .map(m => m.suggestion.title);
-
+    
     const result = await handleGenerateMealSuggestion({
       mealType,
       goal: storedGoal,
       language: dict.lang,
       pantryItems,
-      previousMeals: allLoggedMeals,
+      previousMeals: allLoggedMeals.map(m => m.suggestion.title),
     });
     
     if ('error' in result) {
@@ -273,6 +275,9 @@ export default function DietPage() {
         </h1>
         <p className="text-muted-foreground">{dict.dietPlan.description}</p>
       </div>
+
+      <DailyDietSummary loggedMeals={allLoggedMeals.map(m => m.suggestion.title)} />
+      
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
          {mealTypes.map(type => {
             const renderedCard = renderMealCard(type);

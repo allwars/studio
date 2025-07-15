@@ -9,3 +9,4 @@ import '@/ai/flows/analyze-receipt-flow.ts';
 import '@/ai/flows/get-nutritional-info-flow.ts';
 import '@/ai/flows/generate-pantry-advice-flow.ts';
 import '@/ai/flows/generate-meal-suggestion-flow.ts';
+import '@/ai/flows/generate-daily-diet-advice-flow.ts';

@@ -94,8 +94,8 @@
         "summaryLabel": "Summary"
     },
     "dietPlan": {
-        "title": "Your Daily Diet Plan",
-        "description": "Get smart meal suggestions throughout your day.",
+        "title": "Your Daily Diet",
+        "description": "Get smart meal suggestions and track your intake throughout the day.",
         "pantryEmptyTitle": "Your Pantry is Empty!",
         "pantryEmptyDescription": "Add some ingredients to your pantry to start getting personalized meal suggestions.",
         "goToPantry": "Go to Pantry",
@@ -118,7 +118,13 @@
         "manualLogMealName": "Meal Name",
         "manualLogPlaceholder": "e.g., Scrambled eggs with toast",
         "manualLogMealDescription": "Notes (optional)",
-        "manualLogDescriptionPlaceholder": "e.g., Two eggs, one slice of whole wheat toast"
+        "manualLogDescriptionPlaceholder": "e.g., Two eggs, one slice of whole wheat toast",
+        "dailySummary": {
+            "title": "Daily Summary",
+            "description": "An M2H-powered overview of your nutrition for the day.",
+            "overallScore": "Today's Nutritional Score",
+            "aiTips": "M2H-Powered Tips"
+        }
     },
     "pantry": {
         "title": "Your Pantry",
