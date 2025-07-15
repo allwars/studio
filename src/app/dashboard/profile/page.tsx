@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,12 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { useToast } from '@/hooks/use-toast';
-import type { Locale } from '@/i18n/i18n-config';
 import { useRouter } from 'next/navigation';
 
 type ProfileData = {
   fullName: string;
   email: string;
+  avatar: string;
 };
 
 type Measurements = {
@@ -31,10 +31,12 @@ export default function ProfilePage() {
   const dict = useDictionary();
   const { toast } = useToast();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile] = useState<ProfileData>({
     fullName: 'John Doe',
     email: 'john.doe@example.com',
+    avatar: 'https://placehold.co/80x80.png',
   });
 
   const [measurements, setMeasurements] = useState<Measurements>({
@@ -42,14 +44,13 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    // Load data from localStorage in a real app this would be an API call
     const storedMeasurements = localStorage.getItem('userMeasurements');
     if (storedMeasurements) {
       setMeasurements(JSON.parse(storedMeasurements));
     }
     const storedProfile = localStorage.getItem('userProfile');
-    if(storedProfile) {
-        setProfile(JSON.parse(storedProfile));
+    if (storedProfile) {
+      setProfile(JSON.parse(storedProfile));
     }
   }, []);
 
@@ -63,8 +64,18 @@ export default function ProfilePage() {
     setMeasurements(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfile(prev => ({ ...prev, avatar: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = () => {
-    // Save to localStorage
     localStorage.setItem('userProfile', JSON.stringify(profile));
     localStorage.setItem('userMeasurements', JSON.stringify(measurements));
     toast({
@@ -77,7 +88,9 @@ export default function ProfilePage() {
     if (dict) {
       router.push(`/${dict.lang}`);
     }
-  }
+  };
+
+  const triggerFileSelect = () => fileInputRef.current?.click();
 
   if (!dict) return null;
 
@@ -96,10 +109,11 @@ export default function ProfilePage() {
         <CardContent className="space-y-6">
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage src="https://placehold.co/80x80.png" alt="User avatar" data-ai-hint="user avatar"/>
+              <AvatarImage src={profile.avatar} alt="User avatar" data-ai-hint="user avatar"/>
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
-            <Button variant="outline">{dict.profile.changePhoto}</Button>
+            <input type="file" ref={fileInputRef} onChange={handleAvatarChange} className="hidden" accept="image/*" />
+            <Button variant="outline" onClick={triggerFileSelect}>{dict.profile.changePhoto}</Button>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">

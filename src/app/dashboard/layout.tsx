@@ -35,6 +35,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useDictionary } from '@/hooks/use-dictionary';
+import { useEffect, useState } from 'react';
 
 export default function DashboardLayout({
   children,
@@ -43,6 +44,31 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const dict = useDictionary();
+  const [userProfile, setUserProfile] = useState({ fullName: 'John Doe', avatar: 'https://placehold.co/40x40.png' });
+
+  useEffect(() => {
+    // This effect will run on the client side, ensuring localStorage is available.
+    const storedProfile = localStorage.getItem('userProfile');
+    if (storedProfile) {
+      setUserProfile(JSON.parse(storedProfile));
+    }
+    
+    // Listen for storage changes to update the avatar in the layout
+    const handleStorageChange = () => {
+        const updatedProfile = localStorage.getItem('userProfile');
+        if(updatedProfile) {
+            setUserProfile(JSON.parse(updatedProfile));
+        }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+
+  }, []);
+
 
   if (!dict) {
     return null; // Or a loading state
@@ -63,6 +89,10 @@ export default function DashboardLayout({
     const pathParts = pathname.split('/');
     pathParts[1] = targetLocale;
     return pathParts.join('/');
+  }
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
   }
 
   return (
@@ -133,10 +163,10 @@ export default function DashboardLayout({
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                 <span className="font-semibold">John Doe</span>
+                 <span className="font-semibold">{userProfile.fullName}</span>
                  <Avatar>
-                  <AvatarImage src="https://placehold.co/40x40.png" alt="User avatar" data-ai-hint="user avatar" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarImage src={userProfile.avatar} alt="User avatar" data-ai-hint="user avatar" />
+                  <AvatarFallback>{getInitials(userProfile.fullName)}</AvatarFallback>
                 </Avatar>
               </div>
             </header>
