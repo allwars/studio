@@ -286,6 +286,9 @@
         "workoutsTitle": "Workouts",
         "editEntryTitle": "Edit Entry",
         "editTitleLabel": "Title",
-        "editFocusLabel": "Focus"
+        "editFocusLabel": "Focus",
+        "deleteConfirmTitle": "Are you sure?",
+        "deleteConfirmDescription": "This action cannot be undone. This will permanently delete this entry from your log.",
+        "deleteButton": "Delete"
     }
 }

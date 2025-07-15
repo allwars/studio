@@ -286,6 +286,9 @@
         "workoutsTitle": "Entrenamientos",
         "editEntryTitle": "Editar Entrada",
         "editTitleLabel": "Título",
-        "editFocusLabel": "Enfoque"
+        "editFocusLabel": "Enfoque",
+        "deleteConfirmTitle": "¿Estás seguro?",
+        "deleteConfirmDescription": "Esta acción no se puede deshacer. Esto eliminará permanentemente esta entrada de tu registro.",
+        "deleteButton": "Eliminar"
     }
 }

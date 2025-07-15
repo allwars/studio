@@ -4,12 +4,13 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDictionary } from '@/hooks/use-dictionary';
-import { History, Utensils, Dumbbell } from 'lucide-react';
+import { History, Utensils, Dumbbell, Trash2 } from 'lucide-react';
 import type { ActivityLog, LoggedMealItem, LoggedWorkoutItem } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { EditIcon } from '@/components/icons';
@@ -79,6 +80,20 @@ export default function LogPage() {
         setCurrentItem(null);
     };
 
+    const handleDeleteItem = (itemId: string, itemType: 'meal' | 'workout') => {
+        const updatedLog = log.map(day => {
+            if (itemType === 'meal') {
+                day.meals = day.meals.filter(m => m.id !== itemId);
+            } else {
+                day.workouts = day.workouts.filter(w => w.id !== itemId);
+            }
+            return day;
+        }).filter(day => day.meals.length > 0 || day.workouts.length > 0); // Remove empty days
+
+        localStorage.setItem('activityLog', JSON.stringify(updatedLog));
+        setLog(updatedLog);
+    };
+
     const mealTypesOrder = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
 
     return (
@@ -125,9 +140,28 @@ export default function LogPage() {
                                                             {mealsOfType.map(meal => (
                                                                 <li key={meal.id} className="flex items-center justify-between group">
                                                                     <span>{meal.title}</span>
-                                                                    <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleEditClick({ ...meal, type: 'meal' })}>
-                                                                        <EditIcon className="h-4 w-4" />
-                                                                    </Button>
+                                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+                                                                        <Button variant="ghost" size="icon" onClick={() => handleEditClick({ ...meal, type: 'meal' })}>
+                                                                            <EditIcon className="h-4 w-4" />
+                                                                        </Button>
+                                                                        <AlertDialog>
+                                                                            <AlertDialogTrigger asChild>
+                                                                                <Button variant="ghost" size="icon">
+                                                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                                                </Button>
+                                                                            </AlertDialogTrigger>
+                                                                            <AlertDialogContent>
+                                                                                <AlertDialogHeader>
+                                                                                    <AlertDialogTitle>{dict.log.deleteConfirmTitle}</AlertDialogTitle>
+                                                                                    <AlertDialogDescription>{dict.log.deleteConfirmDescription}</AlertDialogDescription>
+                                                                                </AlertDialogHeader>
+                                                                                <AlertDialogFooter>
+                                                                                    <AlertDialogCancel>{dict.pantry.cancelButtonLabel}</AlertDialogCancel>
+                                                                                    <AlertDialogAction onClick={() => handleDeleteItem(meal.id, 'meal')}>{dict.log.deleteButton}</AlertDialogAction>
+                                                                                </AlertDialogFooter>
+                                                                            </AlertDialogContent>
+                                                                        </AlertDialog>
+                                                                    </div>
                                                                 </li>
                                                             ))}
                                                         </ul>
@@ -147,9 +181,28 @@ export default function LogPage() {
                                                         <p className="font-semibold text-secondary-foreground">{workout.title}</p>
                                                         <p className="text-sm text-muted-foreground">{workout.focus}</p>
                                                     </div>
-                                                    <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleEditClick({ ...workout, type: 'workout' })}>
-                                                        <EditIcon className="h-4 w-4" />
-                                                    </Button>
+                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+                                                        <Button variant="ghost" size="icon" onClick={() => handleEditClick({ ...workout, type: 'workout' })}>
+                                                            <EditIcon className="h-4 w-4" />
+                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button variant="ghost" size="icon">
+                                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>{dict.log.deleteConfirmTitle}</AlertDialogTitle>
+                                                                    <AlertDialogDescription>{dict.log.deleteConfirmDescription}</AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>{dict.pantry.cancelButtonLabel}</AlertDialogCancel>
+                                                                    <AlertDialogAction onClick={() => handleDeleteItem(workout.id, 'workout')}>{dict.log.deleteButton}</AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -70,11 +71,14 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
 
     useEffect(() => {
         const fetchAdvice = async () => {
+            if (!dict) return;
             setIsLoadingAdvice(true);
             const itemNames = items.map(i => i.name);
             const result = await handleGeneratePantryAdvice(itemNames, averageScore, language);
             if (result.advice) {
                 setAdvice(result.advice);
+            } else if (result.error) {
+                setAdvice(dict.pantry.errorFetchingInfo)
             }
             setIsLoadingAdvice(false);
         };
@@ -135,86 +139,78 @@ function PantrySummary({ items, language, infoCache }: { items: PantryItem[], la
 }
 
 
-function NutritionalInfo({ item, language, infoCache, setInfoCache }: { item: PantryItem; language: string; infoCache: NutritionalInfoCache; setInfoCache: React.Dispatch<React.SetStateAction<NutritionalInfoCache>> }) {
+function NutritionalInfo({ item, language, infoCache }: { item: PantryItem; language: string; infoCache: NutritionalInfoCache; }) {
   const dict = useDictionary();
   const cacheKey = item.name.toLowerCase();
   const info = infoCache[cacheKey];
   const isLoading = info === 'loading';
   const isError = info === 'error';
 
-  const fetchInfo = useCallback(async () => {
-    if (!dict || info) return; // Don't fetch if already cached, loading, or errored
-    
-    setInfoCache(prev => ({ ...prev, [cacheKey]: 'loading' }));
-    
-    const result = await handleGetNutritionalInfo(item.name, dict.lang);
-
-    if (result.error) {
-        setInfoCache(prev => ({ ...prev, [cacheKey]: 'error' }));
-    } else if(result.data) {
-        setInfoCache(prev => ({ ...prev, [cacheKey]: result.data! }));
-    }
-  }, [dict, item.name, cacheKey, info, setInfoCache]);
-
-
-  const handleTriggerClick = () => {
-    if(!info){
-        fetchInfo();
-    }
-  }
-
   if (!dict) return null;
+  
+  const content = () => {
+    if (isLoading) {
+        return (
+            <div className="flex items-center space-x-4 p-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm text-muted-foreground">Loading...</span>
+            </div>
+        );
+    }
+    if (isError) {
+        return (
+             <Alert variant="destructive" className="mt-2 text-xs">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>{dict.photoAnalysis.errorTitle}</AlertTitle>
+                <AlertDescription>{dict.pantry.errorFetchingInfo}</AlertDescription>
+            </Alert>
+        );
+    }
+    if (info && typeof info === 'object') {
+        return (
+            <div className="space-y-4 pl-2 text-sm">
+                <p className="text-muted-foreground">{info.description}</p>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <h4 className="font-semibold mb-2">{dict.pantry.macros} (per 100g)</h4>
+                        <ul>
+                          <li><strong>{dict.pantry.calories}:</strong> {info.calories}</li>
+                          <li><strong>{dict.pantry.protein}:</strong> {info.protein}g</li>
+                          <li><strong>{dict.pantry.carbs}:</strong> {info.carbohydrates}g</li>
+                          <li><strong>{dict.pantry.fat}:</strong> {info.fat}g</li>
+                        </ul>
+                    </div>
+                     <div className="col-span-2">
+                         <h4 className="font-semibold mb-2">{dict.pantry.preservatives}</h4>
+                        {info.preservatives.length > 0 ? (
+                            <ul className="list-disc pl-5">
+                                {info.preservatives.map((p, i) => <li key={i}>{p}</li>)}
+                            </ul>
+                        ) : (
+                            <div className="flex items-center gap-2 text-green-600">
+                                <ThumbsUp className="h-4 w-4"/>
+                                <span>{dict.pantry.noPreservatives}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    return null;
+  }
 
   return (
     <AccordionItem value={item.id} className="border-none">
-      <AccordionTrigger onClick={handleTriggerClick} className="group justify-start gap-2 py-1 text-xs text-muted-foreground hover:no-underline">
+      <AccordionTrigger className="group justify-start gap-2 py-1 text-xs text-muted-foreground hover:no-underline">
         <div className="flex items-center gap-1">
             <ChevronDown className="h-3 w-3 transition-transform duration-200 group-data-[state=open]:rotate-180" />
             {dict.pantry.nutritionalInfo}
         </div>
       </AccordionTrigger>
       <AccordionContent className="pt-2">
-        {isLoading &&  <div className="flex items-center space-x-4 p-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-sm text-muted-foreground">Loading...</span>
-        </div>}
-        {isError && 
-            <Alert variant="destructive" className="mt-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>{dict.photoAnalysis.errorTitle}</AlertTitle>
-                <AlertDescription>{dict.pantry.errorFetchingInfo}</AlertDescription>
-            </Alert>
-        }
-        {info && typeof info === 'object' && (
-          <div className="space-y-4 pl-2">
-            <p className="text-sm text-muted-foreground">{info.description}</p>
-            
-            <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                    <h4 className="font-semibold mb-2">{dict.pantry.macros} (per 100g)</h4>
-                    <ul>
-                      <li><strong>{dict.pantry.calories}:</strong> {info.calories}</li>
-                      <li><strong>{dict.pantry.protein}:</strong> {info.protein}g</li>
-                      <li><strong>{dict.pantry.carbs}:</strong> {info.carbohydrates}g</li>
-                      <li><strong>{dict.pantry.fat}:</strong> {info.fat}g</li>
-                    </ul>
-                </div>
-                 <div className="col-span-2">
-                     <h4 className="font-semibold mb-2">{dict.pantry.preservatives}</h4>
-                    {info.preservatives.length > 0 ? (
-                        <ul className="list-disc pl-5">
-                            {info.preservatives.map((p, i) => <li key={i}>{p}</li>)}
-                        </ul>
-                    ) : (
-                        <div className="flex items-center gap-2 text-green-600">
-                            <ThumbsUp className="h-4 w-4"/>
-                            <span>{dict.pantry.noPreservatives}</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-          </div>
-        )}
+        {content()}
       </AccordionContent>
     </AccordionItem>
   );
@@ -229,14 +225,39 @@ export default function PantryPage() {
   const [currentItem, setCurrentItem] = useState<PantryItem | null>(null);
   const [infoCache, setInfoCache] = useState<NutritionalInfoCache>({});
   
+  const fetchAllNutritionalInfo = useCallback(async (items: PantryItem[], language: string) => {
+    setInfoCache(prev => {
+        const newCache = {...prev};
+        items.forEach(item => {
+            const cacheKey = item.name.toLowerCase();
+            if(!newCache[cacheKey]){
+                newCache[cacheKey] = 'loading';
+            }
+        });
+        return newCache;
+    });
+
+    for (const item of items) {
+        const cacheKey = item.name.toLowerCase();
+        if (infoCache[cacheKey] === 'loading' || !infoCache[cacheKey]) {
+            const result = await handleGetNutritionalInfo(item.name, language);
+             setInfoCache(prev => ({
+                ...prev,
+                [cacheKey]: result.error ? 'error' : result.data!
+            }));
+        }
+    }
+  }, [infoCache]);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedItems = localStorage.getItem('pantryItems');
+      let loadedItems: PantryItem[] = [];
       if (storedItems) {
         try {
             const parsedItems = JSON.parse(storedItems);
             if (Array.isArray(parsedItems) && parsedItems.every(item => typeof item === 'object' && 'id' in item && 'name' in item)) {
-                 setPantryItems(parsedItems);
+                 loadedItems = parsedItems;
             } else if (Array.isArray(parsedItems) && parsedItems.every(item => typeof item === 'string')) {
                 const migratedItems: PantryItem[] = parsedItems.map((name: string) => ({
                     id: crypto.randomUUID(),
@@ -244,16 +265,20 @@ export default function PantryPage() {
                     quantity: 1,
                     unit: 'units',
                 }));
-                setPantryItems(migratedItems);
+                loadedItems = migratedItems;
                 localStorage.setItem('pantryItems', JSON.stringify(migratedItems));
             }
         } catch (e) {
             console.error("Failed to parse pantry items from localStorage", e);
-            setPantryItems([]);
         }
       }
+      setPantryItems(loadedItems);
+      if (dict && loadedItems.length > 0) {
+        fetchAllNutritionalInfo(loadedItems, dict.lang);
+      }
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dict]);
 
   const saveItems = (items: PantryItem[]) => {
     setPantryItems(items);
@@ -314,6 +339,9 @@ export default function PantryPage() {
             delete newCache[oldItemName];
             return newCache;
         });
+        if (dict) {
+           fetchAllNutritionalInfo([newItem], dict.lang);
+        }
     }
 
     setIsEditDialogOpen(false);
@@ -399,8 +427,8 @@ export default function PantryPage() {
                             </Button>
                         </div>
                     </div>
-                    <Accordion type="multiple">
-                        <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} setInfoCache={setInfoCache} />
+                    <Accordion type="multiple" defaultValue={[item.id]}>
+                        <NutritionalInfo item={item} language={dict.lang} infoCache={infoCache} />
                     </Accordion>
                 </div>
               ))}
