@@ -32,9 +32,17 @@
     },
     "dashboard": {
         "yourGoal": "Your Goal",
+        "yourCustomGoal": "Your current fitness goal. Edit it to get a personalized workout plan.",
         "editGoal": "Edit Goal",
-        "selectGoal": "Select your primary fitness goal.",
         "saveGoal": "Save Goal",
+        "setCustomGoal": "Describe your fitness goal. Be as specific as you like!",
+        "customGoalLabel": "My Goal",
+        "customGoalPlaceholder": "e.g., 'Run a 5k in 3 months' or 'Increase my bench press by 20 lbs'",
+        "noWorkout": "Set a goal to see your personalized workout.",
+        "workoutError": {
+            "title": "Workout Generation Failed",
+            "message": "We couldn't generate a workout for you at this time. Please try again later. Error:"
+        },
         "goals": {
             "lose_weight": {
                 "title": "Lose Weight",
@@ -47,97 +55,6 @@
             "maintain_fitness": {
                 "title": "Maintain Fitness",
                 "description": "This plan provides a balanced routine of strength, cardio, and flexibility to maintain your current fitness level and overall health."
-            }
-        },
-        "workouts": {
-            "gain_muscle": {
-                "title": "Full Body Strength Day",
-                "focus": "Focus: Power and Endurance",
-                "warmup": {
-                    "title": "Warm-up (10 mins)",
-                    "items": [
-                        "5 minutes of light cardio (jogging, cycling).",
-                        "Dynamic stretches: leg swings, arm circles, torso twists.",
-                        "2 sets of 15 bodyweight squats."
-                    ]
-                },
-                "technique": {
-                    "title": "Technique Focus (5 mins)",
-                    "description": "Practice proper form for barbell squats with an empty bar. Focus on depth and keeping your chest up."
-                },
-                "main": {
-                    "title": "Main Workout (45 mins)",
-                    "items": [
-                        "Barbell Squats: 3 sets of 8-10 reps.",
-                        "Dumbbell Bench Press: 3 sets of 10-12 reps.",
-                        "Pull-ups (or lat pulldowns): 3 sets to failure.",
-                        "Overhead Press: 3 sets of 8-10 reps.",
-                        "Plank: 3 sets, hold for 60 seconds."
-                    ]
-                },
-                "stretching": {
-                    "title": "Stretching (10 mins)",
-                    "description": "Static stretches for major muscle groups: quads, hamstrings, chest, back, and shoulders. Hold each stretch for 30 seconds."
-                }
-            },
-            "lose_weight": {
-                "title": "Cardio & Core Burn",
-                "focus": "Focus: Calorie Burn and Core Strength",
-                "warmup": {
-                    "title": "Warm-up (5 mins)",
-                    "items": [
-                        "3 minutes of jumping jacks.",
-                        "2 minutes of high knees and butt kicks."
-                    ]
-                },
-                "technique": {
-                    "title": "Circuit (30 mins)",
-                    "description": "Complete 3 rounds of the following circuit, with 60 seconds rest between rounds."
-                },
-                "main": {
-                    "title": "Main Circuit",
-                    "items": [
-                        "Burpees: 15 reps.",
-                        "Mountain Climbers: 45 seconds.",
-                        "Kettlebell Swings: 20 reps.",
-                        "Russian Twists: 20 reps (each side).",
-                        "Leg Raises: 15 reps."
-                    ]
-                },
-                "stretching": {
-                    "title": "Cool-down (10 mins)",
-                    "description": "Light jogging followed by full-body static stretching. Hold each stretch for 30 seconds."
-                }
-            },
-            "maintain_fitness": {
-                "title": "Functional Fitness Day",
-                "focus": "Focus: Mobility and Functional Strength",
-                "warmup": {
-                    "title": "Mobility Warm-up (10 mins)",
-                    "items": [
-                        "Cat-Cow Stretch: 10 reps.",
-                        "Thoracic Spine Windmills: 10 reps each side.",
-                        "World's Greatest Stretch: 5 reps each side."
-                    ]
-                },
-                "technique": {
-                    "title": "Balance & Stability",
-                    "description": "Practice single-leg deadlifts with no weight to improve balance."
-                },
-                "main": {
-                    "title": "Main Workout (40 mins)",
-                    "items": [
-                        "Goblet Squats: 3 sets of 12 reps.",
-                        "Push-ups: 3 sets to failure.",
-                        "Farmer's Walk: 3 sets of 40 meters.",
-                        "Face Pulls: 3 sets of 15 reps.",
-                        "Bird-Dog: 3 sets of 12 reps each side."
-                    ]
-                },
-                "stretching": {
-                    "title": "Yoga Flow (10 mins)",
-                    "description": "Finish with a simple yoga flow including Downward-Facing Dog, Warrior I, and Child's Pose."
-                }
             }
         },
         "markAsCompleted": "Mark as Completed"
