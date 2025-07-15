@@ -1,0 +1,33 @@
+
+{
+    "login": {
+        "title": "Welcome to Move2Health",
+        "description": "Enter your email below to login to your account",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "forgotPassword": "Forgot your password?",
+        "loginButton": "Login",
+        "googleLoginButton": "Login with Google",
+        "noAccount": "Don't have an account?",
+        "signUpLink": "Sign up"
+    },
+    "signup": {
+        "title": "Create an Account",
+        "description": "Enter your information to create an account",
+        "fullNameLabel": "Full Name",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "createAccountButton": "Create account",
+        "googleSignupButton": "Sign up with Google",
+        "alreadyAccount": "Already have an account?",
+        "loginLink": "Login"
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "dietPlan": "Diet Plan",
+        "mealAnalysis": "Meal Analysis",
+        "progressAnalysis": "Progress Analysis",
+        "profile": "Profile",
+        "logout": "Logout"
+    }
+}

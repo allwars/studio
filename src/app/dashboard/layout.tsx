@@ -24,15 +24,15 @@ import {
   User,
   LogOut,
   Dumbbell,
+  Languages,
 } from 'lucide-react';
-
-const menuItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/diet', label: 'Diet Plan', icon: UtensilsCrossed },
-  { href: '/dashboard/meal-analysis', label: 'Meal Analysis', icon: Camera },
-  { href: '/dashboard/progress-analysis', label: 'Progress Analysis', icon: Sparkles },
-  { href: '/dashboard/profile', label: 'Profile', icon: User },
-];
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useDictionary } from '@/hooks/use-dictionary';
 
 export default function DashboardLayout({
   children,
@@ -40,6 +40,26 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const dict = useDictionary();
+
+  if (!dict) {
+    return null; // Or a loading state
+  }
+  
+  const menuItems = [
+    { href: '/dashboard', label: dict.sidebar.dashboard, icon: LayoutDashboard },
+    { href: '/dashboard/diet', label: dict.sidebar.dietPlan, icon: UtensilsCrossed },
+    { href: '/dashboard/meal-analysis', label: dict.sidebar.mealAnalysis, icon: Camera },
+    { href: '/dashboard/progress-analysis', label: dict.sidebar.progressAnalysis, icon: Sparkles },
+    { href: '/dashboard/profile', label: dict.sidebar.profile, icon: User },
+  ];
+
+  const currentLang = pathname.split('/')[1];
+  const targetPath = (targetLocale: string) => {
+    const pathParts = pathname.split('/');
+    pathParts[1] = targetLocale;
+    return pathParts.join('/');
+  }
 
   return (
     <SidebarProvider>
@@ -54,29 +74,35 @@ export default function DashboardLayout({
                 </Link>
               </SidebarHeader>
               <SidebarMenu>
-                {menuItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.href}
-                      tooltip={item.label}
-                    >
-                      <Link href={item.href}>
-                        <item.icon />
-                        <span>{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {menuItems.map((item) => {
+                    // Adjust href for i18n
+                    const localizedHref = `/${currentLang}${item.href}`;
+                    const isActive = pathname === localizedHref || (item.href === '/dashboard' && pathname === `/${currentLang}`);
+                    
+                    return (
+                        <SidebarMenuItem key={item.href}>
+                        <SidebarMenuButton
+                            asChild
+                            isActive={isActive}
+                            tooltip={item.label}
+                        >
+                            <Link href={localizedHref}>
+                                <item.icon />
+                                <span>{item.label}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    );
+                })}
               </SidebarMenu>
             </div>
             <SidebarFooter>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link href="/">
+                    <Link href={`/${currentLang}`}>
                         <LogOut />
-                        <span>Logout</span>
+                        <span>{dict.sidebar.logout}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -88,6 +114,21 @@ export default function DashboardLayout({
             <header className="flex items-center justify-between p-4 bg-card md:bg-transparent border-b md:border-none">
               <SidebarTrigger className="md:hidden" />
               <div className="flex items-center gap-4 ml-auto">
+                 <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Languages className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href={targetPath('en')} prefetch={false}>English</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                       <Link href={targetPath('es')} prefetch={false}>Español</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                  <span className="font-semibold">John Doe</span>
                  <Avatar>
                   <AvatarImage src="https://placehold.co/40x40.png" alt="User avatar" data-ai-hint="user avatar" />
