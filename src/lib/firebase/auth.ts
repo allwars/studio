@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -11,6 +12,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { createUserProfile } from '@/services/userService';
+import { toast } from '@/hooks/use-toast';
 
 
 type AuthResult = {
@@ -30,6 +32,8 @@ const formatAuthError = (error: any): string => {
                 return 'The password is too weak. It must be at least 6 characters long.';
             case 'auth/invalid-email':
                  return 'The email address is not valid.';
+            case 'auth/invalid-api-key':
+                return 'The Firebase API Key is invalid. Please check your .env file.';
             default:
                 return 'An unknown error occurred. Please try again.';
         }
@@ -43,18 +47,20 @@ export async function handleSignUp(email: string, password: string, fullName: st
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Update Firebase Auth profile
         await updateProfile(user, { displayName: fullName });
 
-        // Create user profile in Firestore
         const profileData = await createUserProfile(user.uid, {
             email: user.email!,
             fullName: fullName,
         });
 
-        // Store profile in localStorage for immediate use
         localStorage.setItem('userProfile', JSON.stringify({ fullName, email, avatar: profileData.avatar }));
         
+        toast({
+            title: "Account Created!",
+            description: "You have been successfully registered.",
+        });
+
         return { user };
     } catch (error: any) {
         return { error: formatAuthError(error) };
@@ -65,6 +71,12 @@ export async function handleSignUp(email: string, password: string, fullName: st
 export async function handleEmailLogin(email: string, password: string): Promise<AuthResult> {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        toast({
+            title: "Login Successful!",
+            description: "Welcome back.",
+        });
+
         return { user: userCredential.user };
     } catch (error: any) {
         return { error: formatAuthError(error) };
@@ -84,12 +96,16 @@ export async function handleGoogleLogin(): Promise<AuthResult> {
             avatar: user.photoURL || undefined
         }, true);
 
-        // Store profile in localStorage for immediate use
         localStorage.setItem('userProfile', JSON.stringify({
              fullName: user.displayName || 'Google User', 
              email: user.email, 
              avatar: user.photoURL || profileData.avatar,
         }));
+        
+        toast({
+            title: "Login Successful!",
+            description: `Welcome back, ${user.displayName || 'User'}.`,
+        });
 
         return { user };
     } catch (error: any) {
