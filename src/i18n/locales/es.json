@@ -30,6 +30,118 @@
         "profile": "Perfil",
         "logout": "Cerrar sesión"
     },
+    "dashboard": {
+        "yourGoal": "Tu Objetivo",
+        "editGoal": "Editar Objetivo",
+        "selectGoal": "Selecciona tu objetivo principal de fitness.",
+        "saveGoal": "Guardar Objetivo",
+        "goals": {
+            "lose_weight": {
+                "title": "Perder Peso",
+                "description": "Este plan se centra en el déficit calórico a través de una combinación de cardio y entrenamiento de fuerza para maximizar la pérdida de grasa preservando el músculo."
+            },
+            "gain_muscle": {
+                "title": "Ganar Músculo",
+                "description": "Este plan está diseñado para la hipertrofia muscular con sobrecarga progresiva en el entrenamiento de fuerza y una dieta rica en proteínas."
+            },
+            "maintain_fitness": {
+                "title": "Mantener Fitness",
+                "description": "Este plan proporciona una rutina equilibrada de fuerza, cardio y flexibilidad para mantener tu nivel de fitness actual y tu salud general."
+            }
+        },
+        "workouts": {
+            "gain_muscle": {
+                "title": "Día de Fuerza de Cuerpo Completo",
+                "focus": "Enfoque: Potencia y Resistencia",
+                "warmup": {
+                    "title": "Calentamiento (10 mins)",
+                    "items": [
+                        "5 minutos de cardio ligero (correr, bicicleta).",
+                        "Estiramientos dinámicos: balanceo de piernas, círculos de brazos, torsiones de torso.",
+                        "2 series de 15 sentadillas con peso corporal."
+                    ]
+                },
+                "technique": {
+                    "title": "Enfoque en Técnica (5 mins)",
+                    "description": "Practica la forma correcta para las sentadillas con barra sin peso. Concéntrate en la profundidad y en mantener el pecho erguido."
+                },
+                "main": {
+                    "title": "Entrenamiento Principal (45 mins)",
+                    "items": [
+                        "Sentadillas con barra: 3 series de 8-10 repeticiones.",
+                        "Press de banca con mancuernas: 3 series de 10-12 repeticiones.",
+                        "Dominadas (o jalones en polea): 3 series hasta el fallo.",
+                        "Press militar: 3 series de 8-10 repeticiones.",
+                        "Plancha: 3 series, mantener durante 60 segundos."
+                    ]
+                },
+                "stretching": {
+                    "title": "Estiramiento (10 mins)",
+                    "description": "Estiramientos estáticos para los principales grupos musculares: cuádriceps, isquiotibiales, pecho, espalda y hombros. Mantén cada estiramiento durante 30 segundos."
+                }
+            },
+            "lose_weight": {
+                "title": "Quema de Cardio y Core",
+                "focus": "Enfoque: Quema de Calorías y Fuerza del Core",
+                "warmup": {
+                    "title": "Calentamiento (5 mins)",
+                    "items": [
+                        "3 minutos de jumping jacks.",
+                        "2 minutos de rodillas altas y talones al glúteo."
+                    ]
+                },
+                "technique": {
+                    "title": "Circuito (30 mins)",
+                    "description": "Completa 3 rondas del siguiente circuito, con 60 segundos de descanso entre rondas."
+                },
+                "main": {
+                    "title": "Circuito Principal",
+                    "items": [
+                        "Burpees: 15 repeticiones.",
+                        "Escaladores: 45 segundos.",
+                        "Balanceo con kettlebell: 20 repeticiones.",
+                        "Giros rusos: 20 repeticiones (cada lado).",
+                        "Elevaciones de piernas: 15 repeticiones."
+                    ]
+                },
+                "stretching": {
+                    "title": "Enfriamiento (10 mins)",
+                    "description": "Trote ligero seguido de estiramientos estáticos de cuerpo completo. Mantén cada estiramiento durante 30 segundos."
+                }
+            },
+            "maintain_fitness": {
+                "title": "Día de Fitness Funcional",
+                "focus": "Enfoque: Movilidad y Fuerza Funcional",
+                "warmup": {
+                    "title": "Calentamiento de Movilidad (10 mins)",
+                    "items": [
+                        "Estiramiento Gato-Vaca: 10 repeticiones.",
+                        "Molinos de viento de columna torácica: 10 repeticiones cada lado.",
+                        "El Mejor Estiramiento del Mundo: 5 repeticiones cada lado."
+                    ]
+                },
+                "technique": {
+                    "title": "Equilibrio y Estabilidad",
+                    "description": "Practica pesos muertos a una pierna sin peso para mejorar el equilibrio."
+                },
+                "main": {
+                    "title": "Entrenamiento Principal (40 mins)",
+                    "items": [
+                        "Sentadillas Goblet: 3 series de 12 repeticiones.",
+                        "Flexiones: 3 series hasta el fallo.",
+                        "Paseo del granjero: 3 series de 40 metros.",
+                        "Face Pulls: 3 series de 15 repeticiones.",
+                        "Pájaro-Perro: 3 series de 12 repeticiones cada lado."
+                    ]
+                },
+                "stretching": {
+                    "title": "Flujo de Yoga (10 mins)",
+                    "description": "Termina con un flujo de yoga simple que incluya Perro boca abajo, Guerrero I y Postura del niño."
+                }
+            }
+        },
+        "markAsCompleted": "Marcar como Completado"
+    },
     "mealAnalysis": {
         "title": "Análisis de Foto de Comida",
         "description": "Toma una foto de tu comida y nuestra IA te proporcionará un desglose nutricional."
