@@ -29,5 +29,9 @@
         "progressAnalysis": "Análisis de Progreso",
         "profile": "Perfil",
         "logout": "Cerrar sesión"
+    },
+    "mealAnalysis": {
+        "title": "Análisis de Foto de Comida",
+        "description": "Toma una foto de tu comida y nuestra IA te proporcionará un desglose nutricional."
     }
 }

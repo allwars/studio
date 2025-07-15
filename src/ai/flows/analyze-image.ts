@@ -16,6 +16,7 @@ const AnalyzeMealImageInputSchema = z.object({
     .describe(
       "A photo of a meal, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  language: z.string().describe('The language for the analysis response (e.g., "en" or "es").'),
 });
 export type AnalyzeMealImageInput = z.infer<typeof AnalyzeMealImageInputSchema>;
 
@@ -33,6 +34,8 @@ const prompt = ai.definePrompt({
   input: {schema: AnalyzeMealImageInputSchema},
   output: {schema: AnalyzeMealImageOutputSchema},
   prompt: `You are a nutrition expert. Analyze the nutritional content of the meal in the photo, including estimated calories and macros.
+
+Respond in the following language: {{{language}}}
 
 Photo: {{media url=photoDataUri}}`,
 });

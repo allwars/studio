@@ -2,9 +2,9 @@
 
 import { analyzeMealImage } from '@/ai/flows/analyze-image';
 
-export async function handleAnalyzeMealImage(photoDataUri: string) {
+export async function handleAnalyzeMealImage(photoDataUri: string, language: string) {
   try {
-    const result = await analyzeMealImage({ photoDataUri });
+    const result = await analyzeMealImage({ photoDataUri, language });
     return { summary: result.summary, analysis: null, error: null };
   } catch (e) {
     console.error(e);

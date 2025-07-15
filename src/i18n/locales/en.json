@@ -29,5 +29,9 @@
         "progressAnalysis": "Progress Analysis",
         "profile": "Profile",
         "logout": "Logout"
+    },
+    "mealAnalysis": {
+        "title": "Meal Photo Analysis",
+        "description": "Take a picture of your meal and our AI will provide a nutritional breakdown."
     }
 }
