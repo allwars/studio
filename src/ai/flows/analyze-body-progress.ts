@@ -21,6 +21,7 @@ const AnalyzeBodyProgressInputSchema = z.object({
     .string()
     .optional()
     .describe("The previous analysis, if available."),
+  language: z.string().describe('The language for the analysis response (e.g., "en" or "es").'),
 });
 export type AnalyzeBodyProgressInput = z.infer<typeof AnalyzeBodyProgressInputSchema>;
 
@@ -41,6 +42,8 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI fitness and health expert, specializing in analyzing body progress photos to track changes over time, such as muscle mass gain or body fat percentage reduction.
 
   Analyze the following body progress photo. If a previous analysis is provided, compare the current photo to the previous one and summarize the changes observed. Focus on providing constructive feedback and identifying noticeable improvements or areas for adjustment in their fitness journey.
+
+  Respond in the following language: {{{language}}}
 
   Photo: {{media url=photoDataUri}}
 

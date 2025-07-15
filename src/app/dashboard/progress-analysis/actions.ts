@@ -2,12 +2,12 @@
 
 import { analyzeBodyProgress } from '@/ai/flows/analyze-body-progress';
 
-export async function handleAnalyzeBodyProgress(photoDataUri: string) {
+export async function handleAnalyzeBodyProgress(photoDataUri: string, language: string) {
   try {
     // In a real app, you would fetch previous analysis from your database
     const previousAnalysis = undefined; 
     
-    const result = await analyzeBodyProgress({ photoDataUri, previousAnalysis });
+    const result = await analyzeBodyProgress({ photoDataUri, previousAnalysis, language });
     return { summary: result.summary, analysis: result.analysis, error: null };
   } catch (e) {
     console.error(e);
