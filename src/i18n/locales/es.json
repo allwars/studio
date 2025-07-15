@@ -26,6 +26,7 @@
         "dashboard": "Panel",
         "dietPlan": "Plan de Dieta",
         "pantry": "Despensa",
+        "workoutTimer": "Temporizador",
         "mealAnalysis": "Análisis de Comida",
         "progressAnalysis": "Análisis de Progreso",
         "profile": "Perfil",
@@ -166,6 +167,10 @@
         "addButton": "Añadir a la Despensa",
         "toastTitle": "¡Artículos Añadidos!",
         "toastDescription": "Los nuevos artículos se han añadido a tu despensa."
+    },
+    "workoutTimer": {
+        "title": "Temporizador de Entrenamiento",
+        "description": "Selecciona un tipo de temporizador y empieza tu entrenamiento."
     },
     "timer": {
         "title": "Temporizador de Entrenamiento",

@@ -26,6 +26,7 @@
         "dashboard": "Dashboard",
         "dietPlan": "Diet Plan",
         "pantry": "Pantry",
+        "workoutTimer": "Workout Timer",
         "mealAnalysis": "Meal Analysis",
         "progressAnalysis": "Progress Analysis",
         "profile": "Profile",
@@ -166,6 +167,10 @@
         "addButton": "Add Items to Pantry",
         "toastTitle": "Items Added!",
         "toastDescription": "The new items have been added to your pantry."
+    },
+    "workoutTimer": {
+        "title": "Workout Timer",
+        "description": "Select a timer type and start your workout."
     },
     "timer": {
         "title": "Workout Timer",

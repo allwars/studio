@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, RefreshCw, Timer as TimerIcon, Settings, History, Forward, Plus, Check } from 'lucide-react';
+import { Play, Pause, RefreshCw, Timer as TimerIcon, Plus, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label";
@@ -12,8 +12,9 @@ import { cn } from '@/lib/utils';
 
 type TimerMode = 'FOR_TIME' | 'AMRAP' | 'EMOM' | 'TABATA' | 'CHRONO';
 
-const Timer = () => {
-  const dict = useDictionary()?.timer;
+export default function WorkoutTimerPage() {
+  const dict = useDictionary();
+  const timerDict = dict?.timer;
   const [mode, setMode] = useState<TimerMode>('FOR_TIME');
 
   // Timer state
@@ -105,76 +106,77 @@ const Timer = () => {
         setCurrentRound(prev => prev + 1);
     }
   }
+
+  if (!dict || !timerDict) return null; // or a loading skeleton
   
   const renderConfiguration = () => {
-    if (!dict) return null;
     return (
        <Tabs defaultValue="FOR_TIME" className="w-full" onValueChange={(value) => setMode(value as TimerMode)}>
         <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="FOR_TIME">{dict.for_time.title}</TabsTrigger>
-            <TabsTrigger value="AMRAP">{dict.amrap.title}</TabsTrigger>
-            <TabsTrigger value="EMOM">{dict.emom.title}</TabsTrigger>
-            <TabsTrigger value="TABATA">{dict.tabata.title}</TabsTrigger>
-            <TabsTrigger value="CHRONO">{dict.chrono.title}</TabsTrigger>
+            <TabsTrigger value="FOR_TIME">{timerDict.for_time.title}</TabsTrigger>
+            <TabsTrigger value="AMRAP">{timerDict.amrap.title}</TabsTrigger>
+            <TabsTrigger value="EMOM">{timerDict.emom.title}</TabsTrigger>
+            <TabsTrigger value="TABATA">{timerDict.tabata.title}</TabsTrigger>
+            <TabsTrigger value="CHRONO">{timerDict.chrono.title}</TabsTrigger>
         </TabsList>
         <CardContent className="pt-6 space-y-4 text-center">
             <TabsContent value="FOR_TIME" className="space-y-4">
-                 <p className="text-sm text-muted-foreground">{dict.for_time.description}</p>
+                 <p className="text-sm text-muted-foreground">{timerDict.for_time.description}</p>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1 text-left">
-                        <Label htmlFor="for-time-limit-min">{dict.labels.time_cap_min}</Label>
+                        <Label htmlFor="for-time-limit-min">{timerDict.labels.time_cap_min}</Label>
                         <Input id="for-time-limit-min" type="number" value={Math.floor(forTimeLimit / 60)} onChange={e => setForTimeLimit(parseInt(e.target.value) * 60 + (forTimeLimit % 60))} />
                     </div>
                      <div className="space-y-1 text-left">
-                        <Label htmlFor="for-time-rounds">{dict.labels.rounds}</Label>
+                        <Label htmlFor="for-time-rounds">{timerDict.labels.rounds}</Label>
                         <Input id="for-time-rounds" type="number" value={forTimeRounds} onChange={e => setForTimeRounds(parseInt(e.target.value))} />
                     </div>
                  </div>
             </TabsContent>
             <TabsContent value="AMRAP" className="space-y-4">
-                <p className="text-sm text-muted-foreground">{dict.amrap.description}</p>
+                <p className="text-sm text-muted-foreground">{timerDict.amrap.description}</p>
                  <div className="space-y-1 text-left">
-                    <Label htmlFor="amrap-time-min">{dict.labels.time_min}</Label>
+                    <Label htmlFor="amrap-time-min">{timerDict.labels.time_min}</Label>
                     <Input id="amrap-time-min" type="number" value={Math.floor(amrapTime / 60)} onChange={e => setAmrapTime(parseInt(e.target.value) * 60)} />
                 </div>
             </TabsContent>
             <TabsContent value="EMOM" className="space-y-4">
-                <p className="text-sm text-muted-foreground">{dict.emom.description}</p>
+                <p className="text-sm text-muted-foreground">{timerDict.emom.description}</p>
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1 text-left">
-                        <Label htmlFor="emom-interval-sec">{dict.labels.every_sec}</Label>
+                        <Label htmlFor="emom-interval-sec">{timerDict.labels.every_sec}</Label>
                         <Input id="emom-interval-sec" type="number" value={emomInterval} onChange={e => setEmomInterval(parseInt(e.target.value))} />
                     </div>
                      <div className="space-y-1 text-left">
-                        <Label htmlFor="emom-rounds">{dict.labels.rounds}</Label>
+                        <Label htmlFor="emom-rounds">{timerDict.labels.rounds}</Label>
                         <Input id="emom-rounds" type="number" value={emomRounds} onChange={e => setEmomRounds(parseInt(e.target.value))} />
                     </div>
                  </div>
             </TabsContent>
             <TabsContent value="TABATA" className="space-y-4">
-                 <p className="text-sm text-muted-foreground">{dict.tabata.description}</p>
+                 <p className="text-sm text-muted-foreground">{timerDict.tabata.description}</p>
                  <div className="grid grid-cols-3 gap-2">
                     <div className="space-y-1 text-left">
-                        <Label htmlFor="tabata-work">{dict.labels.work}</Label>
+                        <Label htmlFor="tabata-work">{timerDict.labels.work}</Label>
                         <Input id="tabata-work" type="number" value={tabataWork} onChange={e => setTabataWork(parseInt(e.target.value))}/>
                     </div>
                      <div className="space-y-1 text-left">
-                        <Label htmlFor="tabata-rest">{dict.labels.rest}</Label>
+                        <Label htmlFor="tabata-rest">{timerDict.labels.rest}</Label>
                         <Input id="tabata-rest" type="number" value={tabataRest} onChange={e => setTabataRest(parseInt(e.target.value))} />
                     </div>
                      <div className="space-y-1 text-left">
-                        <Label htmlFor="tabata-rounds">{dict.labels.rounds}</Label>
+                        <Label htmlFor="tabata-rounds">{timerDict.labels.rounds}</Label>
                         <Input id="tabata-rounds" type="number" value={tabataRounds} onChange={e => setTabataRounds(parseInt(e.target.value))} />
                     </div>
                  </div>
             </TabsContent>
             <TabsContent value="CHRONO" className="space-y-4">
-                 <p className="text-sm text-muted-foreground">{dict.chrono.description}</p>
+                 <p className="text-sm text-muted-foreground">{timerDict.chrono.description}</p>
             </TabsContent>
             
             <Button onClick={handleStartPause} size="lg" className="w-full">
                 <Play className="mr-2" />
-                {dict.start_button}
+                {timerDict.start_button}
             </Button>
         </CardContent>
        </Tabs>
@@ -182,8 +184,6 @@ const Timer = () => {
   }
 
   const renderActiveTimer = () => {
-    if (!dict) return null;
-
     const isFinished = mode === 'FOR_TIME' && currentRound >= forTimeRounds;
 
     const renderRounds = () => {
@@ -191,13 +191,13 @@ const Timer = () => {
         return (
             <div className="flex flex-col items-center justify-center gap-4 p-4 border-r">
                 <div className="text-center">
-                    <CardDescription>{dict.labels.rounds}</CardDescription>
+                    <CardDescription>{timerDict.labels.rounds}</CardDescription>
                     <div className="text-6xl font-bold text-secondary-foreground" suppressHydrationWarning>
                         {currentRound} <span className="text-4xl text-muted-foreground">/ {forTimeRounds}</span>
                     </div>
                 </div>
                  <Button onClick={handleNextRound} disabled={!isActive || isFinished} className="w-full">
-                    <Plus className="mr-2"/> {dict.next_round_button}
+                    <Plus className="mr-2"/> {timerDict.next_round_button}
                 </Button>
             </div>
         )
@@ -207,7 +207,7 @@ const Timer = () => {
          <CardContent className="grid grid-cols-1 md:grid-cols-2 p-0">
              {renderRounds()}
              <div className={cn("flex flex-col items-center justify-center gap-4 p-6", mode !== 'FOR_TIME' && "md:col-span-2")}>
-                <CardDescription className="font-semibold text-lg">{isFinished ? dict.finished : dict[mode.toLowerCase()]?.title || 'Workout Timer'}</CardDescription>
+                <CardDescription className="font-semibold text-lg">{isFinished ? timerDict.finished : timerDict[mode.toLowerCase() as keyof typeof timerDict]?.title || 'Workout Timer'}</CardDescription>
                 <div className={cn(
                         "text-8xl font-bold font-mono tabular-nums",
                         isFinished ? 'text-green-500' : 'text-primary'
@@ -219,11 +219,11 @@ const Timer = () => {
                  <div className="flex gap-2">
                     <Button onClick={handleStartPause} size="lg" className="w-32 bg-accent hover:bg-accent/80 text-accent-foreground" disabled={isFinished}>
                         {isActive ? <Pause className="mr-2" /> : <Play className="mr-2" />}
-                        {isActive ? dict.pause_button : dict.start_button}
+                        {isActive ? timerDict.pause_button : timerDict.start_button}
                     </Button>
                     <Button onClick={handleReset} variant="outline" size="lg" className="w-32">
                         <RefreshCw className="mr-2" />
-                        {dict.reset_button}
+                        {timerDict.reset_button}
                     </Button>
                 </div>
             </div>
@@ -232,17 +232,16 @@ const Timer = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TimerIcon className="h-6 w-6" />
-          {dict?.title || "Workout Timer"}
-        </CardTitle>
-        <CardDescription>{dict?.description || "Select a timer type and start your workout."}</CardDescription>
-      </CardHeader>
-      {isConfiguring ? renderConfiguration() : renderActiveTimer()}
-    </Card>
+    <div className="space-y-6">
+        <div>
+            <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
+                <TimerIcon /> {dict.workoutTimer.title}
+            </h1>
+            <p className="text-muted-foreground">{dict.workoutTimer.description}</p>
+        </div>
+        <Card>
+            {isConfiguring ? renderConfiguration() : renderActiveTimer()}
+        </Card>
+    </div>
   );
 };
-
-export default Timer;

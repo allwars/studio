@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import Timer from '@/components/timer';
 import { CheckCircle, Heart, Flame, Bike, Zap, StretchHorizontal, Pencil, Target, AlertCircle, BookCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useDictionary } from '@/hooks/use-dictionary';
@@ -264,56 +263,51 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      <div className="lg:col-span-2 space-y-6">
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="w-6 h-6 text-primary" />
-                  {dict.dashboard.yourGoal}
-                </CardTitle>
-                <CardDescription>{dict.dashboard.yourCustomGoal}</CardDescription>
-              </div>
-              <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Pencil className="mr-2 h-4 w-4" /> {dict.dashboard.editGoal}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <form onSubmit={handleSaveGoal}>
-                    <DialogHeader>
-                      <DialogTitle>{dict.dashboard.editGoal}</DialogTitle>
-                      <DialogDescription>{dict.dashboard.setCustomGoal}</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4">
-                       <div className="grid w-full gap-1.5">
-                         <Label htmlFor="goal">{dict.dashboard.customGoalLabel}</Label>
-                         <Textarea defaultValue={goal} name="goal" id="goal" placeholder={dict.dashboard.customGoalPlaceholder} />
-                       </div>
-                    </div>
-                    <DialogFooter>
-                      <Button type="submit">{dict.dashboard.saveGoal}</Button>
-                    </DialogFooter>
-                  </form>
-                </DialogContent>
-              </Dialog>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="w-6 h-6 text-primary" />
+                {dict.dashboard.yourGoal}
+              </CardTitle>
+              <CardDescription>{dict.dashboard.yourCustomGoal}</CardDescription>
             </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground font-semibold text-lg">{goal}</p>
-          </CardContent>
-        </Card>
+            <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Pencil className="mr-2 h-4 w-4" /> {dict.dashboard.editGoal}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <form onSubmit={handleSaveGoal}>
+                  <DialogHeader>
+                    <DialogTitle>{dict.dashboard.editGoal}</DialogTitle>
+                    <DialogDescription>{dict.dashboard.setCustomGoal}</DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                      <div className="grid w-full gap-1.5">
+                        <Label htmlFor="goal">{dict.dashboard.customGoalLabel}</Label>
+                        <Textarea defaultValue={goal} name="goal" id="goal" placeholder={dict.dashboard.customGoalPlaceholder} />
+                      </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">{dict.dashboard.saveGoal}</Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground font-semibold text-lg">{goal}</p>
+        </CardContent>
+      </Card>
 
-        <Card>
-            {renderWorkoutContent()}
-        </Card>
-      </div>
-      <div className="lg:col-span-1">
-        <Timer />
-      </div>
+      <Card>
+          {renderWorkoutContent()}
+      </Card>
     </div>
   );
 }
