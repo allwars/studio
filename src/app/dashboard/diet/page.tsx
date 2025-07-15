@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ import DailyDietSummary from '@/components/daily-diet-summary';
 import type { ActivityLog, LoggedMealItem } from '@/lib/types';
 import LoadingSpinner from '@/components/loading-spinner';
 import { UtensilsIcon } from '@/components/icons';
+import { getPantryItems } from '../pantry/actions';
 
 
 type LoggedMeal = {
@@ -83,13 +84,24 @@ export default function DietPage() {
     return () => clearInterval(timerId);
   }, []);
 
-  useEffect(() => {
-    // Load pantry items from localStorage
-    const storedPantry = localStorage.getItem('pantryItems');
-    const items = storedPantry ? JSON.parse(storedPantry).map((i: any) => i.name) : [];
-    setPantryItems(items);
+  const fetchPantryItems = useCallback(async () => {
+    const result = await getPantryItems();
+    if (result.items) {
+      setPantryItems(result.items.map(item => item.name));
+    } else {
+      toast({
+        variant: 'destructive',
+        title: dict.photoAnalysis.errorTitle,
+        description: result.error,
+      });
+    }
     setIsPantryLoading(false);
-  }, []);
+  }, [toast, dict]);
+
+
+  useEffect(() => {
+    fetchPantryItems();
+  }, [fetchPantryItems]);
 
   if (!dict) return null;
 
@@ -166,7 +178,6 @@ export default function DietPage() {
         [mealKey]: { ...prev[mealKey], isLoading: false, error: result.error },
       }));
     } else {
-      // Instead of replacing, we now log the new suggestion immediately.
       logMeal(mealType, result);
     }
   };
@@ -329,7 +340,7 @@ export default function DietPage() {
          {mealTypes.map(type => {
             const renderedCard = renderMealCard(type);
             return renderedCard ? <div key={type}>{renderedCard}</div> : null;
-         })}
+          })}
       </div>
     </div>
   );

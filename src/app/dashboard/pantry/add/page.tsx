@@ -10,13 +10,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Upload, List, AlertCircle, ShoppingBasket, ClipboardPaste, X, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { handleAnalyzeReceipt } from './actions';
+import { handleAnalyzeReceipt, handleAddItemsToPantry } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import type { PantryItem } from '../page';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Link from 'next/link';
+import LoadingSpinner from '@/components/loading-spinner';
 
 type ExtractedItem = {
   id: string;
@@ -34,6 +35,7 @@ export default function AddToPantryPage() {
   const [receiptText, setReceiptText] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [extractedItems, setExtractedItems] = useState<ExtractedItem[] | null>(null);
   
@@ -98,30 +100,28 @@ export default function AddToPantryPage() {
      setExtractedItems(extractedItems.filter(item => item.id !== id));
   }
   
-  const handleAddItemsToPantry = () => {
+  const onAddItemsToPantry = async () => {
     if (extractedItems) {
-      const storedItems = localStorage.getItem('pantryItems');
-      let pantryItems: PantryItem[] = [];
-      if (storedItems) {
-        try {
-            const parsed = JSON.parse(storedItems);
-            // Check if it's the new format
-            if(Array.isArray(parsed) && parsed.every(i => i.id && i.name)) {
-                pantryItems = parsed;
-            }
-        } catch (e) { console.error(e) }
+      setIsSaving(true);
+      
+      const newItems: Omit<PantryItem, 'id'>[] = extractedItems.map(({ name, quantity, unit }) => ({ name, quantity, unit }));
+      const result = await handleAddItemsToPantry(newItems);
+      
+      if(result.error) {
+        toast({
+          variant: 'destructive',
+          title: dict.photoAnalysis.errorTitle,
+          description: result.error,
+        });
+      } else {
+        toast({
+          title: dict.addToPantry.toastTitle,
+          description: dict.addToPantry.toastDescription,
+        });
+        router.push(`/${dict.lang}/dashboard/pantry`);
       }
       
-      const newItems: PantryItem[] = extractedItems.map(({id, name, quantity, unit}) => ({ id, name, quantity, unit }));
-      const updatedItems = [...pantryItems, ...newItems];
-
-      localStorage.setItem('pantryItems', JSON.stringify(updatedItems));
-      
-      toast({
-        title: dict.addToPantry.toastTitle,
-        description: dict.addToPantry.toastDescription,
-      });
-      router.push(`/${dict.lang}/dashboard/pantry`);
+      setIsSaving(false);
     }
   }
 
@@ -257,7 +257,9 @@ export default function AddToPantryPage() {
             </CardContent>
             {extractedItems.length > 0 && (
                 <div className="p-6 pt-0">
-                    <Button onClick={handleAddItemsToPantry}>{dict.addToPantry.addButton}</Button>
+                    <Button onClick={onAddItemsToPantry} disabled={isSaving}>
+                        {isSaving ? <LoadingSpinner /> : dict.addToPantry.addButton}
+                    </Button>
                 </div>
             )}
         </Card>
