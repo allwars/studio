@@ -83,7 +83,12 @@
     },
     "progressAnalysis": {
         "title": "Body Progress Analysis",
-        "description": "Upload a photo to track your fitness journey. M2H will analyze changes and provide feedback."
+        "description": "Upload a photo to track your fitness journey. M2H will analyze changes and provide feedback.",
+        "suggestedGoalTitle": "M2H Suggested Goal",
+        "suggestedGoalDescription": "Based on your analysis, we think this goal would be a great fit for you!",
+        "setAsGoalButton": "Set as My Goal",
+        "goalSetSuccessTitle": "Goal Updated!",
+        "goalSetSuccessDescription": "Your new goal has been set. Check the dashboard to see your new plan."
     },
     "photoAnalysis": {
         "uploadLabel": "Upload Photo",
@@ -91,12 +96,14 @@
         "analyzingButton": "Analyzing...",
         "selectPhotoError": "Please select a photo first.",
         "unexpectedError": "An unexpected error occurred. Please try again.",
+        "timeoutError": "The operation timed out. Please try again.",
         "errorTitle": "Error",
         "inProgressTitle": "Analysis in Progress",
         "inProgressDescription": "M2H is working its magic...",
         "resultTitle": "M2H Analysis Result",
         "detailedAnalysisLabel": "Detailed Analysis",
-        "summaryLabel": "Summary"
+        "summaryLabel": "Summary",
+        "loading": "Loading..."
     },
     "dietPlan": {
         "title": "Your Daily Diet",
@@ -107,6 +114,7 @@
         "suggestMeal": "Suggest Meal",
         "logMeal": "Log Meal",
         "getSuggestion": "What's on the menu?",
+        "mealAlreadyLogged": "Meal for this time already logged.",
         "logged": "Logged",
         "loggedMeals": "Logged Meals",
         "mealLoggedTitle": "Meal Logged!",
@@ -275,6 +283,9 @@
         "noActivityTitle": "No Activity Yet",
         "noActivityDescription": "Start logging your meals and workouts to see your history here.",
         "mealsTitle": "Meals",
-        "workoutsTitle": "Workouts"
+        "workoutsTitle": "Workouts",
+        "editEntryTitle": "Edit Entry",
+        "editTitleLabel": "Title",
+        "editFocusLabel": "Focus"
     }
 }

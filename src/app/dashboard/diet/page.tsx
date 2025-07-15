@@ -7,11 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { handleGenerateMealSuggestion } from './actions';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import type { MealSuggestionOutput, MealType } from '@/ai/flows/generate-meal-suggestion-flow';
-import { AlertCircle, Utensils, Lightbulb, CheckCircle, Loader2, PencilLine } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { AlertCircle, Utensils, Lightbulb, CheckCircle, PencilLine } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -19,11 +17,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import DailyDietSummary from '@/components/daily-diet-summary';
 import type { ActivityLog, LoggedMealItem } from '@/lib/types';
+import LoadingSpinner from '@/components/loading-spinner';
 
 
 type LoggedMeal = {
   id: string;
   suggestion: MealSuggestionOutput;
+  mealType: MealType;
 };
 
 type MealCategoryState = {
@@ -37,6 +37,8 @@ type DailyMeals = {
 };
 
 const mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+const nonRepeatableMealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner'];
+
 
 const isMealVisible = (mealType: MealType): boolean => {
     const hour = new Date().getHours();
@@ -119,7 +121,7 @@ export default function DietPage() {
 
   const logMeal = (mealType: MealType, suggestion: MealSuggestionOutput) => {
     const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
-    const newMeal: LoggedMeal = { id: crypto.randomUUID(), suggestion };
+    const newMeal: LoggedMeal = { id: crypto.randomUUID(), suggestion, mealType };
     
     setMeals(prev => ({
       ...prev,
@@ -177,7 +179,7 @@ export default function DietPage() {
     logMeal(mealType, manualSuggestion);
   };
 
-  const ManualLogDialog = ({ mealType }: { mealType: MealType }) => {
+  const ManualLogDialog = ({ mealType, isMealLogged }: { mealType: MealType, isMealLogged: boolean }) => {
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -193,7 +195,7 @@ export default function DietPage() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className="w-full">
+          <Button variant="outline" className="w-full" disabled={isMealLogged}>
             <PencilLine className="mr-2" />
             {dict.dietPlan.logManually}
           </Button>
@@ -227,6 +229,8 @@ export default function DietPage() {
   const renderMealCard = (mealType: MealType) => {
     const mealKey = mealType.toLowerCase() as Lowercase<MealType>;
     const mealState = meals[mealKey];
+
+    const isNonRepeatableAndLogged = nonRepeatableMealTypes.includes(mealType) && mealState.loggedMeals.length > 0;
     
     if (!isMealVisible(mealType) && mealState.loggedMeals.length === 0) {
         return null;
@@ -236,12 +240,14 @@ export default function DietPage() {
         <Card className="flex flex-col h-full min-h-[380px]">
             <CardHeader>
                 <CardTitle>{dict.dietPlan.mealType[mealKey]}</CardTitle>
-                <CardDescription>{dict.dietPlan.getSuggestion}</CardDescription>
+                <CardDescription>
+                  {isNonRepeatableAndLogged ? dict.dietPlan.mealAlreadyLogged : dict.dietPlan.getSuggestion}
+                </CardDescription>
             </CardHeader>
             <CardContent className="flex-grow space-y-4">
               {mealState.isLoading && (
                  <div className="flex items-center justify-center p-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <LoadingSpinner />
                  </div>
               )}
                {mealState.error && (
@@ -267,18 +273,28 @@ export default function DietPage() {
               )}
             </CardContent>
             <CardFooter className="flex-col gap-2 mt-auto">
-                 <Button className="w-full" onClick={() => handleSuggestMeal(mealType)} disabled={pantryItems.length === 0 || mealState.isLoading}>
-                    <Lightbulb className="mr-2" />
-                    {mealState.isLoading ? dict.photoAnalysis.analyzingButton : dict.dietPlan.suggestMeal}
+                 <Button className="w-full" onClick={() => handleSuggestMeal(mealType)} disabled={pantryItems.length === 0 || mealState.isLoading || isNonRepeatableAndLogged}>
+                    {mealState.isLoading ? (
+                      <LoadingSpinner />
+                    ) : (
+                      <>
+                        <Lightbulb className="mr-2" />
+                        {dict.dietPlan.suggestMeal}
+                      </>
+                    )}
                 </Button>
-                <ManualLogDialog mealType={mealType} />
+                <ManualLogDialog mealType={mealType} isMealLogged={isNonRepeatableAndLogged} />
             </CardFooter>
         </Card>
     );
   };
   
   if (isPantryLoading) {
-    return <Skeleton className="h-64 w-full" />;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <LoadingSpinner />
+      </div>
+    );
   }
   
   if(pantryItems.length === 0) {

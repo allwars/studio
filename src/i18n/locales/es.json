@@ -83,7 +83,12 @@
     },
     "progressAnalysis": {
         "title": "Análisis de Progreso Corporal",
-        "description": "Sube una foto para seguir tu viaje de fitness. M2H analizará los cambios y te dará retroalimentación."
+        "description": "Sube una foto para seguir tu viaje de fitness. M2H analizará los cambios y te dará retroalimentación.",
+        "suggestedGoalTitle": "Objetivo Sugerido por M2H",
+        "suggestedGoalDescription": "Basado en tu análisis, ¡creemos que este objetivo sería perfecto para ti!",
+        "setAsGoalButton": "Establecer como Mi Objetivo",
+        "goalSetSuccessTitle": "¡Objetivo Actualizado!",
+        "goalSetSuccessDescription": "Tu nuevo objetivo ha sido establecido. Revisa el panel para ver tu nuevo plan."
     },
     "photoAnalysis": {
         "uploadLabel": "Subir Foto",
@@ -91,12 +96,14 @@
         "analyzingButton": "Analizando...",
         "selectPhotoError": "Por favor, selecciona una foto primero.",
         "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+        "timeoutError": "La operación ha tardado demasiado. Por favor, inténtalo de nuevo.",
         "errorTitle": "Error",
         "inProgressTitle": "Análisis en Progreso",
         "inProgressDescription": "M2H está haciendo su magia...",
         "resultTitle": "Resultado del Análisis de M2H",
         "detailedAnalysisLabel": "Análisis Detallado",
-        "summaryLabel": "Resumen"
+        "summaryLabel": "Resumen",
+        "loading": "Cargando..."
     },
     "dietPlan": {
         "title": "Tu Dieta Diaria",
@@ -107,6 +114,7 @@
         "suggestMeal": "Sugerir Comida",
         "logMeal": "Registrar Comida",
         "getSuggestion": "¿Qué hay en el menú?",
+        "mealAlreadyLogged": "Comida para este momento ya registrada.",
         "logged": "Registrado",
         "loggedMeals": "Comidas Registradas",
         "mealLoggedTitle": "¡Comida Registrada!",
@@ -275,6 +283,9 @@
         "noActivityTitle": "Aún no hay Actividad",
         "noActivityDescription": "Empieza a registrar tus comidas y entrenamientos para ver tu historial aquí.",
         "mealsTitle": "Comidas",
-        "workoutsTitle": "Entrenamientos"
+        "workoutsTitle": "Entrenamientos",
+        "editEntryTitle": "Editar Entrada",
+        "editTitleLabel": "Título",
+        "editFocusLabel": "Enfoque"
     }
 }
