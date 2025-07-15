@@ -37,9 +37,8 @@ function NutritionalInfo({ item, language }: { item: PantryItem; language: strin
   const [info, setInfo] = useState<NutritionalInfoOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const dict = useDictionary();
-
-  if (!dict) return null;
 
   const fetchInfo = async () => {
     setIsLoading(true);
@@ -53,6 +52,25 @@ function NutritionalInfo({ item, language }: { item: PantryItem; language: strin
     setIsLoading(false);
   };
   
+  useEffect(() => {
+    // If the accordion is open and the item name changes, refetch the data.
+    if (isOpen) {
+      fetchInfo();
+    }
+  }, [item.name]);
+
+  if (!dict) return null;
+
+
+  const handleTriggerClick = () => {
+    const nextIsOpen = !isOpen;
+    setIsOpen(nextIsOpen);
+    // Fetch info only if it's opening and info hasn't been fetched yet.
+    if (nextIsOpen && !info) {
+      fetchInfo();
+    }
+  }
+
   const getScoreColor = (score: number) => {
     if (score <= 30) return 'bg-red-500';
     if (score <= 60) return 'bg-orange-500';
@@ -61,7 +79,7 @@ function NutritionalInfo({ item, language }: { item: PantryItem; language: strin
 
   return (
     <AccordionItem value={item.id}>
-      <AccordionTrigger onClick={() => !info && fetchInfo()}>
+      <AccordionTrigger onClick={handleTriggerClick} className="group">
         <div className="flex items-center gap-2">
             <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
             {dict.pantry.nutritionalInfo}
@@ -231,9 +249,9 @@ export default function PantryPage() {
         </CardHeader>
         <CardContent>
           {pantryItems.length > 0 ? (
-             <Accordion type="multiple" className="w-full">
+             <Accordion type="multiple" className="w-full space-y-2">
               {pantryItems.map((item) => (
-                 <div key={item.id} className="group flex items-start justify-between p-2 rounded-md bg-secondary transition-colors hover:bg-secondary/80">
+                 <div key={item.id} className="flex items-start justify-between p-2 rounded-md bg-secondary transition-colors hover:bg-secondary/80">
                     <div className="flex-grow">
                         <div className="flex justify-between items-center">
                             <span className="text-secondary-foreground font-semibold">{item.name}</span>
@@ -257,7 +275,9 @@ export default function PantryPage() {
                             </div>
                         </div>
                         <p className="text-sm text-muted-foreground">{item.quantity} {dict.pantry.units_options[item.unit]}</p>
-                        <NutritionalInfo item={item} language={dict.lang} />
+                        <Accordion type="multiple">
+                           <NutritionalInfo item={item} language={dict.lang} />
+                        </Accordion>
                     </div>
                 </div>
               ))}
