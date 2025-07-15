@@ -213,5 +213,28 @@
             "title": "CRONO",
             "description": "Un cronómetro simple para medir tus actividades."
         }
+    },
+    "profile": {
+        "title": "Ajustes de Perfil",
+        "description": "Gestiona la información de tu cuenta.",
+        "yourProfileTitle": "Tu Perfil",
+        "yourProfileDescription": "Actualiza tus datos personales aquí.",
+        "changePhoto": "Cambiar Foto",
+        "fullName": "Nombre Completo",
+        "email": "Correo Electrónico",
+        "logout": "Cerrar Sesión",
+        "updateProfile": "Actualizar Perfil",
+        "measurementsTitle": "Medidas Corporales",
+        "measurementsDescription": "Haz un seguimiento de tu progreso. Estos datos ayudan a personalizar tus planes.",
+        "weight": "Peso (kg)",
+        "height": "Altura (cm)",
+        "neck": "Cuello (cm)",
+        "chest": "Pecho (cm)",
+        "waist": "Cintura (cm)",
+        "hips": "Caderas (cm)",
+        "bicep": "Bíceps (cm)",
+        "thigh": "Muslo (cm)",
+        "updateSuccessTitle": "Perfil Actualizado",
+        "updateSuccessDescription": "Tu información ha sido guardada."
     }
 }

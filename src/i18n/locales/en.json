@@ -213,5 +213,28 @@
             "title": "CHRONO",
             "description": "A simple stopwatch to time your activities."
         }
+    },
+    "profile": {
+        "title": "Profile Settings",
+        "description": "Manage your account information.",
+        "yourProfileTitle": "Your Profile",
+        "yourProfileDescription": "Update your personal details here.",
+        "changePhoto": "Change Photo",
+        "fullName": "Full Name",
+        "email": "Email",
+        "logout": "Logout",
+        "updateProfile": "Update Profile",
+        "measurementsTitle": "Body Measurements",
+        "measurementsDescription": "Track your progress. This data helps personalize your plans.",
+        "weight": "Weight (kg)",
+        "height": "Height (cm)",
+        "neck": "Neck (cm)",
+        "chest": "Chest (cm)",
+        "waist": "Waist (cm)",
+        "hips": "Hips (cm)",
+        "bicep": "Bicep (cm)",
+        "thigh": "Thigh (cm)",
+        "updateSuccessTitle": "Profile Updated",
+        "updateSuccessDescription": "Your information has been saved."
     }
 }
