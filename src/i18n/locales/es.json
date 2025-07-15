@@ -287,6 +287,7 @@
         "noActivityTitle": "Aún no hay Actividad",
         "noActivityDescription": "Empieza a registrar tus comidas y entrenamientos para ver tu historial aquí.",
         "mealsTitle": "Comidas",
+<<<<<<< HEAD
         "workoutsTitle": "Entrenamientos",
         "editEntryTitle": "Editar Entrada",
         "editTitleLabel": "Título",
@@ -294,5 +295,8 @@
         "deleteConfirmTitle": "¿Estás seguro?",
         "deleteConfirmDescription": "Esta acción no se puede deshacer. Esto eliminará permanentemente esta entrada de tu registro.",
         "deleteButton": "Eliminar"
+=======
+        "workoutsTitle": "Entrenamientos"
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
     }
 }

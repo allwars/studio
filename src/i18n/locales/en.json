@@ -287,6 +287,7 @@
         "noActivityTitle": "No Activity Yet",
         "noActivityDescription": "Start logging your meals and workouts to see your history here.",
         "mealsTitle": "Meals",
+<<<<<<< HEAD
         "workoutsTitle": "Workouts",
         "editEntryTitle": "Edit Entry",
         "editTitleLabel": "Title",
@@ -294,5 +295,8 @@
         "deleteConfirmTitle": "Are you sure?",
         "deleteConfirmDescription": "This action cannot be undone. This will permanently delete this entry from your log.",
         "deleteButton": "Delete"
+=======
+        "workoutsTitle": "Workouts"
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
     }
 }

@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { History, Utensils, Dumbbell, Trash2 } from 'lucide-react';
@@ -17,34 +18,56 @@ import { EditIcon } from '@/components/icons';
 import LoadingSpinner from '@/components/loading-spinner';
 
 type EditableItem = (LoggedMealItem & { type: 'meal' }) | (LoggedWorkoutItem & { type: 'workout' });
+=======
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useDictionary } from '@/hooks/use-dictionary';
+import { History, Utensils, Dumbbell } from 'lucide-react';
+import type { ActivityLog } from '@/lib/types';
+import { format, parseISO } from 'date-fns';
+import { es, enUS } from 'date-fns/locale';
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
 
 export default function LogPage() {
     const dict = useDictionary();
     const [log, setLog] = useState<ActivityLog>([]);
     const [isLoading, setIsLoading] = useState(true);
+<<<<<<< HEAD
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [currentItem, setCurrentItem] = useState<EditableItem | null>(null);
     const [editedTitle, setEditedTitle] = useState('');
     const [editedFocus, setEditedFocus] = useState('');
+=======
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
 
     const dateLocales: { [key: string]: Locale } = {
         en: enUS,
         es: es,
+<<<<<<< HEAD
     };
 
     const loadLog = () => {
+=======
+      };
+
+    useEffect(() => {
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
         const storedLog = localStorage.getItem('activityLog');
         if (storedLog) {
             setLog(JSON.parse(storedLog).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
         }
+<<<<<<< HEAD
     };
 
     useEffect(() => {
         loadLog();
+=======
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
         setIsLoading(false);
     }, []);
 
     if (!dict) return null;
+    
+    const mealTypesOrder = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
 
     const handleEditClick = (item: EditableItem) => {
         setCurrentItem(item);
@@ -106,9 +129,17 @@ export default function LogPage() {
             </div>
 
             {isLoading ? (
+<<<<<<< HEAD
                 <div className="flex justify-center items-center h-64">
                     <LoadingSpinner />
                 </div>
+=======
+                <Card>
+                    <CardContent className="p-6">
+                        <p>{dict.log.loading}</p>
+                    </CardContent>
+                </Card>
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
             ) : log.length === 0 ? (
                 <Card className="flex items-center justify-center min-h-[400px]">
                     <CardContent className="text-center p-6">
@@ -136,6 +167,7 @@ export default function LogPage() {
                                                 return (
                                                     <div key={mealType}>
                                                         <h4 className="font-bold text-md">{dict.dietPlan.mealType[mealType.toLowerCase() as keyof typeof dict.dietPlan.mealType]}</h4>
+<<<<<<< HEAD
                                                         <ul className="list-none mt-2 space-y-1 text-muted-foreground">
                                                             {mealsOfType.map(meal => (
                                                                 <li key={meal.id} className="flex items-center justify-between group">
@@ -163,6 +195,11 @@ export default function LogPage() {
                                                                         </AlertDialog>
                                                                     </div>
                                                                 </li>
+=======
+                                                        <ul className="list-disc pl-5 mt-2 space-y-1 text-muted-foreground">
+                                                            {mealsOfType.map(meal => (
+                                                                <li key={meal.id}>{meal.title}</li>
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
                                                             ))}
                                                         </ul>
                                                     </div>
@@ -176,6 +213,7 @@ export default function LogPage() {
                                         <h3 className="text-xl font-semibold mb-3 flex items-center gap-2"><Dumbbell size={20}/> {dict.log.workoutsTitle}</h3>
                                         <div className="space-y-2">
                                             {day.workouts.map(workout => (
+<<<<<<< HEAD
                                                 <div key={workout.id} className="p-3 bg-secondary rounded-md flex items-center justify-between group">
                                                     <div>
                                                         <p className="font-semibold text-secondary-foreground">{workout.title}</p>
@@ -203,6 +241,11 @@ export default function LogPage() {
                                                             </AlertDialogContent>
                                                         </AlertDialog>
                                                     </div>
+=======
+                                                <div key={workout.id} className="p-3 bg-secondary rounded-md">
+                                                    <p className="font-semibold text-secondary-foreground">{workout.title}</p>
+                                                    <p className="text-sm text-muted-foreground">{workout.focus}</p>
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
                                                 </div>
                                             ))}
                                         </div>
@@ -213,6 +256,7 @@ export default function LogPage() {
                     ))}
                 </div>
             )}
+<<<<<<< HEAD
              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
@@ -236,6 +280,8 @@ export default function LogPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+=======
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
         </div>
     );
 }

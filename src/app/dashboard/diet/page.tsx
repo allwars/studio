@@ -17,9 +17,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import DailyDietSummary from '@/components/daily-diet-summary';
 import type { ActivityLog, LoggedMealItem } from '@/lib/types';
+<<<<<<< HEAD
 import LoadingSpinner from '@/components/loading-spinner';
 import { UtensilsIcon } from '@/components/icons';
 import type { PantryItem } from '../pantry/page';
+=======
+>>>>>>> 8b72e23 (en el registro mete las comidas que se añadan ene l plan de dietaagrupad)
 
 
 type LoggedMeal = {
