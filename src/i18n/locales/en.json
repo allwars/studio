@@ -118,7 +118,13 @@
         "toastDescription": "Your diet plan will now use your updated ingredient list.",
         "quantity": "Quantity",
         "unit": "Unit",
-        "units": "units",
+        "units_options": {
+            "g": "g",
+            "kg": "kg",
+            "l": "l",
+            "ml": "ml",
+            "units": "units"
+        },
         "selectUnit": "Select unit",
         "itemRemoved": "Item removed from pantry.",
         "invalidInput": "Please fill out all fields correctly.",
@@ -126,7 +132,11 @@
         "calories": "Calories",
         "protein": "Protein",
         "carbs": "Carbohydrates",
-        "fat": "Fat"
+        "fat": "Fat",
+        "macros": "Macros",
+        "healthScore": "Health Score",
+        "preservatives": "Preservatives",
+        "noPreservatives": "No preservatives"
     },
     "addToPantry": {
         "title": "Add to Pantry",

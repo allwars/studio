@@ -118,7 +118,13 @@
         "toastDescription": "Tu plan de dieta usará ahora tu lista de ingredientes actualizada.",
         "quantity": "Cantidad",
         "unit": "Unidad",
-        "units": "unidades",
+        "units_options": {
+            "g": "g",
+            "kg": "kg",
+            "l": "l",
+            "ml": "ml",
+            "units": "unidades"
+        },
         "selectUnit": "Seleccionar unidad",
         "itemRemoved": "Ingrediente eliminado de la despensa.",
         "invalidInput": "Por favor, rellena todos los campos correctamente.",
@@ -126,7 +132,11 @@
         "calories": "Calorías",
         "protein": "Proteína",
         "carbs": "Carbohidratos",
-        "fat": "Grasas"
+        "fat": "Grasas",
+        "macros": "Macros",
+        "healthScore": "Puntuación de Salud",
+        "preservatives": "Conservantes",
+        "noPreservatives": "No tiene conservantes"
     },
     "addToPantry": {
         "title": "Añadir a la Despensa",

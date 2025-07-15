@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDictionary } from '@/hooks/use-dictionary';
-import { Trash2, PlusCircle, ShoppingBasket, Pencil, ChevronDown, Loader2, AlertCircle } from 'lucide-react';
+import { Trash2, PlusCircle, ShoppingBasket, Pencil, ChevronDown, Loader2, AlertCircle, ThumbsUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import {
@@ -23,6 +23,8 @@ import { handleGetNutritionalInfo } from './actions';
 import type { NutritionalInfoOutput } from '@/ai/flows/get-nutritional-info-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export type PantryItem = {
   id: string;
@@ -50,6 +52,12 @@ function NutritionalInfo({ item, language }: { item: PantryItem; language: strin
     }
     setIsLoading(false);
   };
+  
+  const getScoreColor = (score: number) => {
+    if (score <= 30) return 'bg-red-500';
+    if (score <= 60) return 'bg-orange-500';
+    return 'bg-green-500';
+  }
 
   return (
     <AccordionItem value={item.id}>
@@ -72,14 +80,41 @@ function NutritionalInfo({ item, language }: { item: PantryItem; language: strin
             </Alert>
         }
         {info && (
-          <div className="space-y-2 pl-2">
+          <div className="space-y-4 pl-2">
             <p className="text-sm text-muted-foreground">{info.description}</p>
-            <ul className="text-sm">
-              <li><strong>{dict.pantry.calories}:</strong> {info.calories}</li>
-              <li><strong>{dict.pantry.protein}:</strong> {info.protein}g</li>
-              <li><strong>{dict.pantry.carbs}:</strong> {info.carbohydrates}g</li>
-              <li><strong>{dict.pantry.fat}:</strong> {info.fat}g</li>
-            </ul>
+            
+            <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <h4 className="font-semibold mb-2">{dict.pantry.macros}</h4>
+                    <ul>
+                      <li><strong>{dict.pantry.calories}:</strong> {info.calories}</li>
+                      <li><strong>{dict.pantry.protein}:</strong> {info.protein}g</li>
+                      <li><strong>{dict.pantry.carbs}:</strong> {info.carbohydrates}g</li>
+                      <li><strong>{dict.pantry.fat}:</strong> {info.fat}g</li>
+                    </ul>
+                </div>
+                <div>
+                     <h4 className="font-semibold mb-2">{dict.pantry.healthScore}</h4>
+                     <div className="flex items-center gap-2">
+                        <span className={cn("text-lg font-bold text-white px-2 py-1 rounded-md", getScoreColor(info.nutritionalScore))}>
+                            {info.nutritionalScore}/100
+                        </span>
+                     </div>
+                </div>
+                 <div className="col-span-2">
+                     <h4 className="font-semibold mb-2">{dict.pantry.preservatives}</h4>
+                    {info.preservatives.length > 0 ? (
+                        <ul className="list-disc pl-5">
+                            {info.preservatives.map((p, i) => <li key={i}>{p}</li>)}
+                        </ul>
+                    ) : (
+                        <div className="flex items-center gap-2 text-green-600">
+                            <ThumbsUp className="h-4 w-4"/>
+                            <span>{dict.pantry.noPreservatives}</span>
+                        </div>
+                    )}
+                </div>
+            </div>
           </div>
         )}
       </AccordionContent>
@@ -221,7 +256,7 @@ export default function PantryPage() {
                                 </Button>
                             </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">{item.quantity} {item.unit}</p>
+                        <p className="text-sm text-muted-foreground">{item.quantity} {dict.pantry.units_options[item.unit]}</p>
                         <NutritionalInfo item={item} language={dict.lang} />
                     </div>
                 </div>
@@ -270,7 +305,7 @@ export default function PantryPage() {
                             <SelectItem value="kg">kg</SelectItem>
                             <SelectItem value="ml">ml</SelectItem>
                             <SelectItem value="l">l</SelectItem>
-                            <SelectItem value="units">{dict.pantry.units}</SelectItem>
+                            <SelectItem value="units">{dict.pantry.units_options.units}</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

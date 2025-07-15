@@ -233,7 +233,7 @@ export default function AddToPantryPage() {
                                         <SelectItem value="kg">kg</SelectItem>
                                         <SelectItem value="ml">ml</SelectItem>
                                         <SelectItem value="l">l</SelectItem>
-                                        <SelectItem value="units">{dict.pantry.units}</SelectItem>
+                                        <SelectItem value="units">{dict.pantry.units_options.units}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
