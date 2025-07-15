@@ -1,43 +1,43 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useDictionary } from '@/hooks/use-dictionary';
 import Image from 'next/image';
 
-const dietPlan = [
+const dietImages = [
   {
-    meal: 'Breakfast',
-    title: 'Protein-Packed Oatmeal',
-    description: 'Oats with a scoop of protein powder, berries, and a sprinkle of chia seeds. A great start to fuel your day.',
     image: 'https://placehold.co/600x400.png',
     dataAiHint: 'oatmeal berries'
   },
   {
-    meal: 'Lunch',
-    title: 'Grilled Chicken Salad',
-    description: 'Mixed greens with grilled chicken breast, cherry tomatoes, cucumbers, and a light vinaigrette dressing.',
     image: 'https://placehold.co/600x400.png',
     dataAiHint: 'chicken salad'
   },
   {
-    meal: 'Dinner',
-    title: 'Salmon with Quinoa & Asparagus',
-    description: 'Baked salmon fillet served with a side of quinoa and roasted asparagus. Rich in Omega-3s and nutrients.',
     image: 'https://placehold.co/600x400.png',
     dataAiHint: 'salmon quinoa'
   },
   {
-    meal: 'Snack',
-    title: 'Greek Yogurt with Almonds',
-    description: 'A handful of almonds with a cup of plain Greek yogurt. Perfect for a post-workout protein boost.',
     image: 'https://placehold.co/600x400.png',
     dataAiHint: 'yogurt almonds'
   },
 ];
 
 export default function DietPage() {
+  const dict = useDictionary();
+
+  if (!dict) return null;
+
+  const dietPlan = dict.dietPlan.meals.map((meal, index) => ({
+    ...meal,
+    ...dietImages[index]
+  }));
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Daily Diet Plan</h1>
-        <p className="text-muted-foreground">Tailored for a balanced training day.</p>
+        <h1 className="text-3xl font-bold font-headline">{dict.dietPlan.title}</h1>
+        <p className="text-muted-foreground">{dict.dietPlan.description}</p>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
         {dietPlan.map((item) => (

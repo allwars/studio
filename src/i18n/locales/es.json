@@ -50,5 +50,31 @@
         "resultTitle": "Resultado del Análisis de IA",
         "detailedAnalysisLabel": "Análisis Detallado",
         "summaryLabel": "Resumen"
+    },
+    "dietPlan": {
+        "title": "Plan de Dieta Diario",
+        "description": "Diseñado para un día de entrenamiento equilibrado.",
+        "meals": [
+            {
+                "meal": "Desayuno",
+                "title": "Avena Rica en Proteínas",
+                "description": "Avena con una cucharada de proteína en polvo, bayas y una pizca de semillas de chía. Un gran comienzo para energizar tu día."
+            },
+            {
+                "meal": "Almuerzo",
+                "title": "Ensalada de Pollo a la Parrilla",
+                "description": "Mezcla de hojas verdes con pechuga de pollo a la parrilla, tomates cherry, pepinos y un aderezo ligero de vinagreta."
+            },
+            {
+                "meal": "Cena",
+                "title": "Salmón con Quinoa y Espárragos",
+                "description": "Filete de salmón al horno servido con una guarnición de quinoa y espárragos asados. Rico en Omega-3 y nutrientes."
+            },
+            {
+                "meal": "Snack",
+                "title": "Yogur Griego con Almendras",
+                "description": "Un puñado de almendras con una taza de yogur griego natural. Perfecto para un impulso de proteínas después del entrenamiento."
+            }
+        ]
     }
 }
