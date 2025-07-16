@@ -37,9 +37,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useDictionary } from '@/hooks/use-dictionary';
 import { useEffect, useState } from 'react';
-import withAuth from '@/components/auth/withAuth';
-import { useAuth } from '@/hooks/use-auth';
-import { handleLogout } from '@/lib/firebase/auth';
 import LoadingSpinner from '@/components/loading-spinner';
 
 function DashboardLayout({
@@ -49,7 +46,6 @@ function DashboardLayout({
 }) {
   const pathname = usePathname();
   const dict = useDictionary();
-  const { user, loading } = useAuth();
   const router = useRouter();
   
   const [userProfile, setUserProfile] = useState({ fullName: 'User', avatar: 'https://placehold.co/40x40.png' });
@@ -78,11 +74,11 @@ function DashboardLayout({
   }, []);
 
   const onLogout = async () => {
-    await handleLogout();
+    // Since login is removed, this can be a simple redirect or page reload.
     router.push(`/${dict.lang}`);
   };
 
-  if (loading || !dict || !user) {
+  if (!dict) {
     return (
         <div className="flex h-screen items-center justify-center">
             <LoadingSpinner />
@@ -180,10 +176,10 @@ function DashboardLayout({
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                 <span className="font-semibold">{user.displayName || 'User'}</span>
+                 <span className="font-semibold">{userProfile.fullName}</span>
                  <Avatar>
-                  <AvatarImage src={user.photoURL || userProfile.avatar} alt="User avatar" data-ai-hint="user avatar" />
-                  <AvatarFallback>{getInitials(user.displayName || '')}</AvatarFallback>
+                  <AvatarImage src={userProfile.avatar} alt="User avatar" data-ai-hint="user avatar" />
+                  <AvatarFallback>{getInitials(userProfile.fullName || '')}</AvatarFallback>
                 </Avatar>
               </div>
             </header>
@@ -194,4 +190,4 @@ function DashboardLayout({
   );
 }
 
-export default withAuth(DashboardLayout);
+export default DashboardLayout;
