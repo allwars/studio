@@ -1,11 +1,5 @@
-'use client';
+import LoginPage from '@/app/[lang]/page';
 
-import { redirect } from 'next/navigation';
-
-export default function RootPage() {
-  
-  // This page is now a redirect handler
-  redirect('/es');
-
-  return null;
-}
+// The root page will now render the login page directly.
+// The middleware is responsible for ensuring the URL has the correct locale.
+export default LoginPage;
